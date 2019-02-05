@@ -50,3 +50,11 @@ class GetAllParties(Resource):
             return {'Message': 'There is no party in our database'}, 404
         else:
             return {'Message': 'The following include our parties', 'All Parties': parties_list}, 200
+
+class GetPartyById(Resource):
+    """docstring for GetPartyById."""
+    def get(self, party_id):
+        get_party = [party for party in parties_list if party['id'] == party_id]
+        if len(get_party) == 0:
+            return {'Message': "Either there is no such party or id is invalid"}, 404
+        return {'Message': 'Party found!!!', 'Party': get_party[0]}, 200
