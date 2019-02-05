@@ -8,7 +8,8 @@ api = Api(v1)
 
 #local imports
 from config import config
-from .my_api.v1.parties import CreateParty
+from .my_api.v1.parties import CreateParty, GetAllParties
+
 
 # Initialize the app
 def create_app(config_value):
@@ -23,3 +24,4 @@ def create_app(config_value):
 
 #Add resource
 api.add_resource(CreateParty, '/parties')
+api.add_resource(GetAllParties,'/parties')
