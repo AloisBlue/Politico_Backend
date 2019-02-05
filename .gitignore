@@ -1,0 +1,4 @@
+Politico_Backend/
+*/__pycache__/
+*pyc
+.cache
