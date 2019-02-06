@@ -10,8 +10,7 @@ api = Api(v1)
 from config import config
 from .my_api.v1.parties import CreateParty, GetAllParties, PartyById
 from .my_api.v1.offices import CreateOffice, GetAllOffices, OfficeById
-
-
+  
 # Initialize the app
 def create_app(config_value):
     app = Flask(__name__, instance_relative_config=True)
