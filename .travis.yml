@@ -4,13 +4,13 @@ language:
 python:
   - "2.7"
 cache:
-  - pip3
+  - pip
 
 # getting dependencies
 install:
   - "pip install -r requirements.txt"
 
 script:
-  - nosetests
+  - nosetests -v app/my_api/tests/v1
 after_success:
   - coveralls
