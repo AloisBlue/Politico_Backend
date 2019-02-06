@@ -9,7 +9,7 @@ api = Api(v1)
 #local imports
 from config import config
 from .my_api.v1.parties import CreateParty, GetAllParties, PartyById
-from .my_api.v1.offices import CreateOffice, GetAllOffices
+from .my_api.v1.offices import CreateOffice, GetAllOffices, OfficeById
 
 
 # Initialize the app
@@ -29,3 +29,4 @@ api.add_resource(GetAllParties,'/parties')
 api.add_resource(PartyById, '/parties/<int:party_id>')
 api.add_resource(CreateOffice, '/offices')
 api.add_resource(GetAllOffices, '/offices')
+api.add_resource(OfficeById, '/offices/<int:office_id>')

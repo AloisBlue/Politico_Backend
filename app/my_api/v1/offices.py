@@ -44,3 +44,13 @@ class GetAllOffices(Resource):
         else:
             return {'Message': 'The following include office registered in the system',
                         'Office': offices_list}, 200
+
+class OfficeById(Resource):
+    """docstring for OfficeById."""
+    def get(self, office_id):
+        exists_office = [office for office in offices_list if office['id'] == office_id]
+        if len(exists_office) == 0:
+            return {'Message': 'Either there is no such office or your Id is invalid'}, 404
+        else:
+            return {'Message': 'Office was found!!!',
+                        'Office': exists_office[0]}, 200
