@@ -74,11 +74,22 @@ class PartyById(Resource):
         return {'Message': 'Party found!!!', 'Party': get_party[0]}, 200
 
     def put(self, party_id):
-        get_party = [party for party in parties_list if party['id'] == party_id]
         data = PartyById.parser.parse_args()
+        get_party = [party for party in parties_list if party['id'] == party_id]
+        check_exists = [party for party in parties_list if party['name'] == data['name']]
         if len(get_party) == 0:
-            return {'Message': 'Invalid id, confirm the id of your party'}
+            return {'Message': 'Invalid id, confirm the id of your party'}, 404
+        elif len(check_exists) != 0:
+            return {'Message': 'That party already exists'}, 400
         else:
             get_party[0].update(data)
             return {'Message': 'Your party update is successful',
-                        'Party': get_party[0]}
+                        'Party': get_party[0]}, 200
+
+    def delete(self, party_id):
+        check_exists = [party for party in parties_list if party['id'] == party_id]
+        if len(check_exists) == 0:
+            return {'Message': 'Invalid id, confirm the id of the party'}, 404
+        else:
+            parties_list.remove(check_exists[0])
+            return {'Message': 'The party was successfully removed from the system'}, 200
