@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/AloisBlue/Politico_Backend/badge.svg?branch=master)](https://coveralls.io/github/AloisBlue/Politico_Backend?branch=master)
+
 #### Name of the backend
 Politico_Backend
 #### Description
