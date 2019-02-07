@@ -20,7 +20,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - pytest --cov=app/my_api/tests/v1
+  - pytest --cov=app
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
