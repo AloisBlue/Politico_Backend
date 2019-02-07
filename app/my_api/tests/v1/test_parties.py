@@ -18,14 +18,80 @@ class TestParties(unittest.TestCase):
             'hqAddress': 'Nairobi',
             'logUrl': 'http://logo.com'
             }
+        self.no_name = {
+            'id': 2,
+            'hqAddress': 'Mombasa',
+            'logUrl': "klfjd.com"
+        }
+        self.no_add = {
+            'id': 2,
+            'name': 'casse',
+            'logUrl': "klfjd.com"
+        }
+        self.no_url = {
+            'id': 2,
+            'name': 'casse',
+            'hqAddress': "Voi"
+        }
 
     def test_create_party(self):
         """
         Give a status 201 of when a  is created
         """
         response = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "Party registered!!!")
         self.assertEqual(201, response.status_code)
 
+    def test_create_party_name_empty(self):
+        """
+        Return name to be filled
+        """
+        response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_name), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['message'], {'name': 'Name of the party should be filled'})
+
+    def test_create_party_address_empty(self):
+        """
+        Return address required
+        """
+        response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_add), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['message'], {'hqAddress': 'Head quarter address needed'})
+
+    def test_create_party_url_empty(self):
+        """
+        Return url required to create party
+        """
+        response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_url), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['message'], {'logUrl': 'Logo url needed'})
+
+    def test_get_particular_party(self):
+        """
+        Give a status of 200 when a particular party exists
+        """
+        response = self.Client.get('/api/v1/parties/1', content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "Party found!!!")
+        self.assertEqual(200, response.status_code)
+
+    def test_get_particular_party_when_none(self):
+        """
+        Give a status of 404 not found when a party by id doesn't exists
+        """
+        response = self.Client.get('/api/v1/parties/12', content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "Either there is no such party or id is invalid")
+
+    def test_get_all_parties(self):
+        """
+        Status of 200
+        """
+        response = self.Client.get('/api/v1/parties', content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "The following include our parties")
+        self.assertEqual(200, response.status_code)
 
 if __name__ == '__main__':
     unittest.main()
