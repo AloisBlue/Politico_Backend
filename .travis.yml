@@ -20,7 +20,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - nosetests -v app/my_api/tests/v1 --with-coverage
+  - pytest --cov=app/my_api/tests/v1
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
