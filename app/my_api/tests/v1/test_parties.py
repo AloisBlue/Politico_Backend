@@ -33,6 +33,11 @@ class TestParties(unittest.TestCase):
             'name': 'casse',
             'hqAddress': "Voi"
         }
+        self.edit_party = {
+            'name': 'Mwamba',
+            'hqAddress': 'Milangine',
+            'logUrl': 'fdlf.com'
+        }
 
     def test_create_party(self):
         """
@@ -42,6 +47,16 @@ class TestParties(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Party registered!!!")
         self.assertEqual(201, response.status_code)
+
+    def test_create_party_when_exists(self):
+        """
+        Give a status 400 of when party exists
+        """
+        response = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
+        response1 = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
+        result = json.loads(response1.data.decode())
+        self.assertEqual(result['Message'], "The party is already registered")
+        self.assertEqual(400, response.status_code)
 
     def test_create_party_name_empty(self):
         """
@@ -71,6 +86,7 @@ class TestParties(unittest.TestCase):
         """
         Give a status of 200 when a particular party exists
         """
+        response1 = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
         response = self.Client.get('/api/v1/parties/1', content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Party found!!!")
@@ -88,10 +104,44 @@ class TestParties(unittest.TestCase):
         """
         Status of 200
         """
+        response1 = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
         response = self.Client.get('/api/v1/parties', content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "The following include our parties")
         self.assertEqual(200, response.status_code)
+
+    def test_edit_party(self):
+        """
+        Give status 200 and test message on edit
+        """
+        response1 = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
+        response = self.Client.put('/api/v1/parties/1', data=json.dumps(self.edit_party), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "Your party update is successful")
+        self.assertEqual(200, response.status_code)
+
+    def test_edit_with_same_data(self):
+        """
+        Give a status of 400 if party exists
+        """
+        response2 = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
+        response = self.Client.put('/api/v1/parties/1', data=json.dumps(self.edit_party), content_type='application/json')
+        response1 = self.Client.put('/api/v1/parties/1', data=json.dumps(self.edit_party), content_type='application/json')
+        result = json.loads(response1.data.decode())
+        self.assertEqual(result['Message'], "That party already exists")
+        self.assertEqual(400, response.status_code)
+
+    def test_delete_party(self):
+        response = self.Client.delete('/api/v1/parties/1', content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "The party was successfully removed from the system")
+        self.assertEqual(200, response.status_code)
+
+    def test_delete_party_when_none(self):
+        response = self.Client.delete('/api/v1/parties/12', content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "Invalid id, confirm the id of the party")
+        self.assertEqual(404, response.status_code)
 
 if __name__ == '__main__':
     unittest.main()
