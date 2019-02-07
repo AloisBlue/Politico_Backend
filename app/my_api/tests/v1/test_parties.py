@@ -60,7 +60,7 @@ class TestParties(unittest.TestCase):
 
     def test_create_party_name_empty(self):
         """
-        Return name to be filled as required data
+        Return name to be filled as require data
         """
         response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_name), content_type='application/json')
         result = json.loads(response.data.decode())
@@ -68,7 +68,7 @@ class TestParties(unittest.TestCase):
 
     def test_create_party_address_empty(self):
         """
-        Return address required
+        Return address required to be filled
         """
         response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_add), content_type='application/json')
         result = json.loads(response.data.decode())
