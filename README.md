@@ -1,4 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/AloisBlue/Politico_Backend/badge.svg?branch=master)](https://coveralls.io/github/AloisBlue/Politico_Backend?branch=master)
+[![codecov](https://codecov.io/gh/AloisBlue/Politico_Backend/branch/ft-get-specific-office-163720410/graph/badge.svg)](https://codecov.io/gh/AloisBlue/Politico_Backend)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a1a46a3438e3f150b0e4/maintainability)](https://codeclimate.com/github/AloisBlue/Politico_Backend/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a1a46a3438e3f150b0e4/test_coverage)](https://codeclimate.com/github/AloisBlue/Politico_Backend/test_coverage)
 [![Build Status](https://travis-ci.com/AloisBlue/Politico_Backend.svg?branch=ft-get-specific-office-163720410)](https://travis-ci.com/AloisBlue/Politico_Backend)
