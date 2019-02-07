@@ -60,7 +60,7 @@ class TestParties(unittest.TestCase):
 
     def test_create_party_name_empty(self):
         """
-        Return name to be filled
+        Return name to be filled as required data
         """
         response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_name), content_type='application/json')
         result = json.loads(response.data.decode())
