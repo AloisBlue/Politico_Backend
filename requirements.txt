@@ -6,6 +6,7 @@ chardet==3.0.4
 Click==7.0
 codecov==2.0.15
 coverage==4.5.2
+coveralls==1.5.1
 Flask==1.0.2
 Flask-RESTful==0.3.7
 idna==2.8
@@ -15,6 +16,7 @@ MarkupSafe==1.1.0
 more-itertools==5.0.0
 pluggy==0.8.1
 py==1.7.0
+pycodestyle-2.5.0
 pytest==4.2.0
 pytest-cov==2.6.1
 pytz==2018.9
