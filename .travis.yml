@@ -11,7 +11,7 @@ install:
   - "pip install -r requirements.txt"
 
 env:
-  - CODECOV_TOKEN="f6586b45-c8c8-4d13-86cd-586543bed541"
+  - export CODECOV_TOKEN="f6586b45-c8c8-4d13-86cd-586543bed541"
   global:
     - CC_TEST_REPORTER_ID=c4161de17790461d95283922109d0a07efcfd29f35e824b4cac8fbc1d0f9aa86
 
