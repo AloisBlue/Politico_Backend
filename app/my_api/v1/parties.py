@@ -1,4 +1,4 @@
-# app/api/v1/party.py
+# app/my_api/v1/party.py
 from flask_restful import Resource, reqparse
 
 # Storage
