@@ -1,6 +1,6 @@
 #app/__init__.py
 
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, render_template
 from flask_restful import Resource, Api
 
 v1 = Blueprint('api', __name__)
@@ -18,6 +18,11 @@ def create_app(config_value):
     app.config.from_object(config[config_value])
 
     app.register_blueprint(v1, url_prefix='/api/v1')
+
+    #heroku landing
+    @app.route('/')
+    def heroku():
+        return render_template('index.html')
 
     return app
 
