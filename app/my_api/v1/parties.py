@@ -1,8 +1,8 @@
 # app/api/v1/party.py
 from flask_restful import Resource, reqparse
 
-# Dictionary
-Parties = [
+# Storage
+parties_list = [
 
 ]
 
@@ -30,15 +30,23 @@ class CreateParty(Resource):
 
     def post(self):
         data = CreateParty.parser.parse_args()
-        party_exist = [party for party in Parties if party['name'] == data['name']]
+        party_exist = [party for party in parties_list if party['name'] == data['name']]
         if (len(party_exist) != 0):
             return {'Message': 'The party is already registered'}, 400
-        _id = len(Parties) + 1
+        _id = len(parties_list) + 1
         new_party = {
             'id': _id,
             'name': data['name'],
             'hqAddress': data['hqAddress'],
             'logUrl': data['logUrl']
             }
-        Parties.append(new_party)
-        return {'message': 'Party registered!!!', 'Party': new_party}, 201
+        parties_list.append(new_party)
+        return {'Message': 'Party registered!!!', 'Party': new_party}, 201
+
+class GetAllParties(Resource):
+    """docstring for getting all parties."""
+    def get(self):
+        if not parties_list:
+            return {'Message': 'There is no party in our database'}, 404
+        else:
+            return {'Message': 'The following include our parties', 'All Parties': parties_list}, 200
