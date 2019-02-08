@@ -8,12 +8,7 @@ api = Api(v1)
 
 #local imports
 from config import config
-
-# Hello world function testing
-class HelloWorld(Resource):
-	"""docstring for HelloWorld"""
-	def get(self):
-		return ("Hello")
+from .my_api.v1.parties import CreateParty
 
 # Initialize the app
 def create_app(config_value):
@@ -22,9 +17,9 @@ def create_app(config_value):
     #Config file
     app.config.from_object(config[config_value])
 
-    app.register_blueprint(v1)
+    app.register_blueprint(v1, url_prefix='/api/v1')
 
     return app
 
 #Add resource
-api.add_resource(HelloWorld, '/')
+api.add_resource(CreateParty, '/parties')
