@@ -7,16 +7,16 @@
 #### Name of the backend
 Politico_Backend
 #### Description
-The backend is designed to be consume by a front end that conducts election
+The backend is designed to be consumed by a front end that conducts election
 #### Language used
 Python
 #### Framework
 Flask restful
 #### Pivotal tracker dashboard
-https://www.pivotaltracker.com/n/projects/
+https://www.pivotaltracker.com/n/projects/2244219
 
 #### Routes
-|#### ACTION   |ROUTE   |DESCRIPTION   |
+|ACTION   |ROUTE   |DESCRIPTION   |
 |---|---|---|
 |GET  | /api/v1/parties  |Get all parties in the data structure   |
 |GET | /api/v1/offices  |Get all offices in the data structure   |
@@ -26,3 +26,11 @@ https://www.pivotaltracker.com/n/projects/
 |POST   |/api/v1/offices   |Create a new non existent office   |
 |PUT   |/api/v1/parties/1   |Edit an existing office with new details   |
 |DELETE   |/api/v1/parties   |Delete an existing office out of the data structure   |
+
+#### Deployment
+Heroku
+#### Heroku link
+https://politico-backend-api.herokuapp.com
+
+**NB:** *Use above heroku link with the routes provided above*
+
