@@ -15,8 +15,15 @@ Flask restful
 #### Pivotal tracker dashboard
 https://www.pivotaltracker.com/n/projects/
 
-|   |   |   |   |   |
-|---|---|---|---|---|
-|   |   |   |   |   |
-|   |   |   |   |   |
-|   |   |   |   |   |
+#### Routes
+|ACTION   |ROUTE   |DESCRIPTION   |
+|---|---|---|
+|   |   |   |
+|   |   |   |
+|   |   |   |
+|   |   |   |
+|   |   |   |
+|   |   |   |
+|   |   |   |
+|   |   |   |
+|   |   |   |
