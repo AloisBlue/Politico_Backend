@@ -16,14 +16,13 @@ Flask restful
 https://www.pivotaltracker.com/n/projects/
 
 #### Routes
-|ACTION   |ROUTE   |DESCRIPTION   |
+|#### ACTION   |ROUTE   |DESCRIPTION   |
 |---|---|---|
-|GET  |   |   |
-|GET |   |   |
-|GET  |   |   |
-|GET   |   |   |
-|POST   |   |   |
-|POST   |   |   |
-|PUT   |   |   |
-|DELETE   |   |   |
-|   |   |   |
+|GET  | /api/v1/parties  |Get all parties in the data structure   |
+|GET | /api/v1/offices  |Get all offices in the data structure   |
+|GET  |/api/v1/parties/1   |Get a particular party by id   |
+|GET   |/api/v1/offices/1   |Get a particular office by id   |
+|POST   |/api/v1/parties   |Create a new non existent party   |
+|POST   |/api/v1/offices   |Create a new non existent office   |
+|PUT   |/api/v1/parties/1   |Edit an existing office with new details   |
+|DELETE   |/api/v1/parties   |Delete an existing office out of the data structure   |
