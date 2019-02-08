@@ -14,6 +14,13 @@ Python
 Flask restful
 #### Pivotal tracker dashboard
 https://www.pivotaltracker.com/n/projects/2244219
+#### How to run this backend app
+- Clone the repo to your computer via *git clone https://github.com/AloisBlue/Politico_Backend.git*
+- Go to app directory *cd Politico_Backend*
+- Make a virtual environment *python3 -m venv venv*
+- Activate the above venv *source venv/bin/activate*
+- Export environment variable i.e. * export FLASK_CONFIG=development && export FLASK_APP=run.py*
+- Run the app *flask run*
 
 #### Routes
 |ACTION   |ROUTE   |DESCRIPTION   |
