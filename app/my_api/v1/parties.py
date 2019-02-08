@@ -51,10 +51,34 @@ class GetAllParties(Resource):
         else:
             return {'Message': 'The following include our parties', 'All Parties': parties_list}, 200
 
-class GetPartyById(Resource):
-    """docstring for GetPartyById."""
+class PartyById(Resource):
+    """docstring for PartyById."""
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'name',
+        type=str
+    )
+    parser.add_argument(
+        'hqAddress',
+        type=str
+    )
+    parser.add_argument(
+        'logUrl',
+        type=str
+    )
+
     def get(self, party_id):
         get_party = [party for party in parties_list if party['id'] == party_id]
         if len(get_party) == 0:
             return {'Message': "Either there is no such party or id is invalid"}, 404
         return {'Message': 'Party found!!!', 'Party': get_party[0]}, 200
+
+    def put(self, party_id):
+        get_party = [party for party in parties_list if party['id'] == party_id]
+        data = PartyById.parser.parse_args()
+        if len(get_party) == 0:
+            return {'Message': 'Invalid id, confirm the id of your party'}
+        else:
+            get_party[0].update(data)
+            return {'Message': 'Your party update is successful',
+                        'Party': get_party[0]}
