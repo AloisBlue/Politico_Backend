@@ -18,12 +18,12 @@ https://www.pivotaltracker.com/n/projects/
 #### Routes
 |ACTION   |ROUTE   |DESCRIPTION   |
 |---|---|---|
-|   |   |   |
-|   |   |   |
-|   |   |   |
-|   |   |   |
-|   |   |   |
-|   |   |   |
-|   |   |   |
-|   |   |   |
+|GET  |   |   |
+|GET |   |   |
+|GET  |   |   |
+|GET   |   |   |
+|POST   |   |   |
+|POST   |   |   |
+|PUT   |   |   |
+|DELETE   |   |   |
 |   |   |   |
