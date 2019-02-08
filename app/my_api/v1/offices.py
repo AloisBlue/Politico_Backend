@@ -22,6 +22,7 @@ class CreateOffice(Resource):
         help="Type of the office not stated"
     )
 
+    @classmethod
     def post(self):
         data = CreateOffice.parser.parse_args()
         office_exist = [office for office in offices_list if office['name'] == data['name']]
@@ -38,6 +39,7 @@ class CreateOffice(Resource):
 
 class GetAllOffices(Resource):
     """docstring for GetAllOffices."""
+    @classmethod
     def get(self):
         if not offices_list:
             return {'Message': 'No office registered in the system yet'}, 404
@@ -47,6 +49,7 @@ class GetAllOffices(Resource):
 
 class OfficeById(Resource):
     """docstring for OfficeById."""
+    @classmethod
     def get(self, office_id):
         exists_office = [office for office in offices_list if office['id'] == office_id]
         if len(exists_office) == 0:

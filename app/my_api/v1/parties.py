@@ -28,6 +28,7 @@ class CreateParty(Resource):
         help="Logo url needed"
     )
 
+    @classmethod
     def post(self):
         data = CreateParty.parser.parse_args()
         party_exist = [party for party in parties_list if party['name'] == data['name']]
@@ -45,6 +46,7 @@ class CreateParty(Resource):
 
 class GetAllParties(Resource):
     """docstring for getting all parties."""
+    @classmethod
     def get(self):
         if not parties_list:
             return {'Message': 'There is no party in our database'}, 404
@@ -67,12 +69,14 @@ class PartyById(Resource):
         type=str
     )
 
+    @classmethod
     def get(self, party_id):
         get_party = [party for party in parties_list if party['id'] == party_id]
         if len(get_party) == 0:
             return {'Message': "Either there is no such party or id is invalid"}, 404
         return {'Message': 'Party found!!!', 'Party': get_party[0]}, 200
 
+    @classmethod
     def put(self, party_id):
         data = PartyById.parser.parse_args()
         get_party = [party for party in parties_list if party['id'] == party_id]
@@ -86,6 +90,7 @@ class PartyById(Resource):
             return {'Message': 'Your party update is successful',
                         'Party': get_party[0]}, 200
 
+    @classmethod
     def delete(self, party_id):
         check_exists = [party for party in parties_list if party['id'] == party_id]
         if len(check_exists) == 0:
