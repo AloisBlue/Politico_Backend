@@ -2,13 +2,13 @@
 language:
   - python
 python:
-  - "3.7.0"
+  - "3.7-dev"
 cache:
-  - pip3
+  - pip
 
 # getting dependencies
 install:
-  - "pip3 install -r requirements.txt"
+  - "pip install -r requirements.txt"
 
 env:
   global:
