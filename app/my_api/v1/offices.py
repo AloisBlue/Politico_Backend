@@ -6,6 +6,7 @@ offices_list = [
 
 ]
 
+
 class CreateOffice(Resource):
     """docstring for CreateOffice."""
     parser = reqparse.RequestParser()
@@ -22,6 +23,7 @@ class CreateOffice(Resource):
         help="Type of the office not stated"
     )
 
+    @classmethod
     def post(self):
         data = CreateOffice.parser.parse_args()
         office_exist = [office for office in offices_list if office['name'] == data['name']]
@@ -33,24 +35,36 @@ class CreateOffice(Resource):
             'name': data['name'],
             'type': data['type']
             }
-        offices_list.append(new_office)
-        return {'Message': 'Office registered in the system!!!', 'Office': new_office}, 201
+        # validation
+        if not data['name'] or not data['type']:
+            return {'Message': 'Check for empty fields'}
+        elif len(data['name']) < 3 or len(data['name']) > 15:
+            return {'Message': 'Name must be between 3 and 15 characters'}
+        elif len(data['type']) < 3 or len(data['type']) > 10:
+            return {'Message': 'Name must be between 3 and 10 characters'}
+        else:
+            offices_list.append(new_office)
+            return {'Message': 'Office registered in the system!!!', 'Office': new_office}, 201
+
 
 class GetAllOffices(Resource):
     """docstring for GetAllOffices."""
+    @classmethod
     def get(self):
         if not offices_list:
             return {'Message': 'No office registered in the system yet'}, 404
         else:
             return {'Message': 'The following include office registered in the system',
-                        'Office': offices_list}, 200
+                    'Office': offices_list}, 200
+
 
 class OfficeById(Resource):
     """docstring for OfficeById."""
+    @classmethod
     def get(self, office_id):
         exists_office = [office for office in offices_list if office['id'] == office_id]
         if len(exists_office) == 0:
             return {'Message': 'Either there is no such office or your Id is invalid'}, 404
         else:
             return {'Message': 'Office was found!!!',
-                        'Office': exists_office[0]}, 200
+                    'Office': exists_office[0]}, 200

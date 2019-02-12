@@ -6,8 +6,10 @@ chardet==3.0.4
 Click==7.0
 codecov==2.0.15
 coverage==4.5.2
+coveralls==1.5.1
 Flask==1.0.2
 Flask-RESTful==0.3.7
+gunicorn==19.9.0
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
@@ -21,4 +23,5 @@ pytz==2018.9
 requests==2.21.0
 six==1.12.0
 urllib3==1.24.1
+validators==0.12.4
 Werkzeug==0.14.1

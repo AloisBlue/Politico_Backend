@@ -56,11 +56,11 @@ class TestParties(unittest.TestCase):
         response1 = self.Client.post('/api/v1/parties', data=json.dumps(self.new_party), content_type='application/json')
         result = json.loads(response1.data.decode())
         self.assertEqual(result['Message'], "The party is already registered")
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(400, response1.status_code)
 
     def test_create_party_name_empty(self):
         """
-        Return name to be filled
+        Return name to be filled as require data
         """
         response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_name), content_type='application/json')
         result = json.loads(response.data.decode())
@@ -68,7 +68,7 @@ class TestParties(unittest.TestCase):
 
     def test_create_party_address_empty(self):
         """
-        Return address required
+        Return address required to be filled
         """
         response = self.Client.post('/api/v1/parties', data=json.dumps(self.no_add), content_type='application/json')
         result = json.loads(response.data.decode())
@@ -99,6 +99,7 @@ class TestParties(unittest.TestCase):
         response = self.Client.get('/api/v1/parties/12', content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Either there is no such party or id is invalid")
+        self.assertEqual(404, response.status_code)
 
     def test_get_all_parties(self):
         """
@@ -129,7 +130,7 @@ class TestParties(unittest.TestCase):
         response1 = self.Client.put('/api/v1/parties/1', data=json.dumps(self.edit_party), content_type='application/json')
         result = json.loads(response1.data.decode())
         self.assertEqual(result['Message'], "That party already exists")
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(400, response1.status_code)
 
     def test_delete_party(self):
         response = self.Client.delete('/api/v1/parties/1', content_type='application/json')
@@ -142,6 +143,7 @@ class TestParties(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Invalid id, confirm the id of the party")
         self.assertEqual(404, response.status_code)
+
 
 if __name__ == '__main__':
     unittest.main()

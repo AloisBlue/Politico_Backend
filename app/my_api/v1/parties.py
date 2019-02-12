@@ -1,10 +1,12 @@
 # app/my_api/v1/party.py
 from flask_restful import Resource, reqparse
+import validators
 
 # Storage
 parties_list = [
 
 ]
+
 
 class CreateParty(Resource):
     """docstring for CreateParty."""
@@ -28,6 +30,7 @@ class CreateParty(Resource):
         help="Logo url needed"
     )
 
+    @classmethod
     def post(self):
         data = CreateParty.parser.parse_args()
         party_exist = [party for party in parties_list if party['name'] == data['name']]
@@ -40,16 +43,29 @@ class CreateParty(Resource):
             'hqAddress': data['hqAddress'],
             'logUrl': data['logUrl']
             }
-        parties_list.append(new_party)
-        return {'Message': 'Party registered!!!', 'Party': new_party}, 201
+        # validation
+        if not data['name'] or not data['hqAddress'] or not data['logUrl']:
+            return {'Message': 'Check for empty fields'}
+        elif len(data['name']) < 3 or len(data['name']) > 15:
+            return {'Message': 'Name must be between 3 and 15 characters'}
+        elif len(data['hqAddress']) < 3 or len(data['hqAddress']) > 20:
+            return {'Message': 'Head quarter address must be between 3 and 20 characters'}
+        elif not validators.url(data['logUrl']):
+            return {'Message': 'You must provide a valid url'}
+        else:
+            parties_list.append(new_party)
+            return {'Message': 'Party registered!!!', 'Party': new_party}, 201
+
 
 class GetAllParties(Resource):
     """docstring for getting all parties."""
+    @classmethod
     def get(self):
         if not parties_list:
             return {'Message': 'There is no party in our database'}, 404
         else:
             return {'Message': 'The following include our parties', 'All Parties': parties_list}, 200
+
 
 class PartyById(Resource):
     """docstring for PartyById."""
@@ -67,12 +83,14 @@ class PartyById(Resource):
         type=str
     )
 
+    @classmethod
     def get(self, party_id):
         get_party = [party for party in parties_list if party['id'] == party_id]
         if len(get_party) == 0:
             return {'Message': "Either there is no such party or id is invalid"}, 404
         return {'Message': 'Party found!!!', 'Party': get_party[0]}, 200
 
+    @classmethod
     def put(self, party_id):
         data = PartyById.parser.parse_args()
         get_party = [party for party in parties_list if party['id'] == party_id]
@@ -84,8 +102,9 @@ class PartyById(Resource):
         else:
             get_party[0].update(data)
             return {'Message': 'Your party update is successful',
-                        'Party': get_party[0]}, 200
+                    'Party': get_party[0]}, 200
 
+    @classmethod
     def delete(self, party_id):
         check_exists = [party for party in parties_list if party['id'] == party_id]
         if len(check_exists) == 0:
