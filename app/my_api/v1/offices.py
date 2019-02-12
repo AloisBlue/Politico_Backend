@@ -35,8 +35,16 @@ class CreateOffice(Resource):
             'name': data['name'],
             'type': data['type']
             }
-        offices_list.append(new_office)
-        return {'Message': 'Office registered in the system!!!', 'Office': new_office}, 201
+        # validation
+        if not data['name'] or not data['type']:
+            return {'Message': 'Check for empty fields'}
+        elif len(data['name']) < 3 or len(data['name']) > 15:
+            return {'Message': 'Name must be between 3 and 15 characters'}
+        elif len(data['type']) < 3 or len(data['type']) > 10:
+            return {'Message': 'Name must be between 3 and 10 characters'}
+        else:
+            offices_list.append(new_office)
+            return {'Message': 'Office registered in the system!!!', 'Office': new_office}, 201
 
 
 class GetAllOffices(Resource):

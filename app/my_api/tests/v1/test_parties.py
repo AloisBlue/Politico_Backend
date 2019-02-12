@@ -144,5 +144,6 @@ class TestParties(unittest.TestCase):
         self.assertEqual(result['Message'], "Invalid id, confirm the id of the party")
         self.assertEqual(404, response.status_code)
 
+
 if __name__ == '__main__':
     unittest.main()

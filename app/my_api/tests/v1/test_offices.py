@@ -5,6 +5,7 @@ import json
 
 from app import create_app
 
+
 class TestOffices(unittest.TestCase):
     """docstring for TestOffices."""
     def setUp(self):
@@ -50,6 +51,7 @@ class TestOffices(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Either there is no such office or your Id is invalid")
         self.assertEqual(404, response.status_code)
+
 
 if __name__ == "__main__":
     unittest.main()
