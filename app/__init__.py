@@ -7,6 +7,7 @@ from flask_restful import Resource, Api
 from config import config
 from .my_api.v1.parties import CreateParty, GetAllParties, PartyById
 from .my_api.v1.offices import CreateOffice, GetAllOffices, OfficeById
+from.my_api.database import database_init
 
 v1 = Blueprint('api', __name__)
 api = Api(v1)
@@ -20,6 +21,8 @@ def create_app(config_value):
     app.config.from_object(config[config_value])
 
     app.register_blueprint(v1, url_prefix='/api/v1')
+
+    database_init()
 
     # heroku landing
     @app.route('/')
