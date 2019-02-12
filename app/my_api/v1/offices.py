@@ -6,6 +6,7 @@ offices_list = [
 
 ]
 
+
 class CreateOffice(Resource):
     """docstring for CreateOffice."""
     parser = reqparse.RequestParser()
@@ -37,6 +38,7 @@ class CreateOffice(Resource):
         offices_list.append(new_office)
         return {'Message': 'Office registered in the system!!!', 'Office': new_office}, 201
 
+
 class GetAllOffices(Resource):
     """docstring for GetAllOffices."""
     @classmethod
@@ -45,7 +47,8 @@ class GetAllOffices(Resource):
             return {'Message': 'No office registered in the system yet'}, 404
         else:
             return {'Message': 'The following include office registered in the system',
-                        'Office': offices_list}, 200
+                    'Office': offices_list}, 200
+
 
 class OfficeById(Resource):
     """docstring for OfficeById."""
@@ -56,4 +59,4 @@ class OfficeById(Resource):
             return {'Message': 'Either there is no such office or your Id is invalid'}, 404
         else:
             return {'Message': 'Office was found!!!',
-                        'Office': exists_office[0]}, 200
+                    'Office': exists_office[0]}, 200
