@@ -13,6 +13,7 @@ install:
 env:
   global:
     - CC_TEST_REPORTER_ID=c4161de17790461d95283922109d0a07efcfd29f35e824b4cac8fbc1d0f9aa86
+    - export DATABASE_URL='dbname=politico password=p@s3wOrD user=blue'
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -20,7 +21,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - pytest --cov=app
+  - pytest --cov=app/my_api/tests
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
