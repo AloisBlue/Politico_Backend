@@ -3,7 +3,7 @@ language:
   - python
 python:
   - "3.7.0"
-cache:
+cache:s
   - pip3
 
 # getting dependencies
