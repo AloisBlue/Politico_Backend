@@ -1,0 +1,28 @@
+# .travis.yml
+language:
+  - python
+python:
+  - "2.7"
+cache:
+  - pip
+
+# getting dependencies
+install:
+  - "pip install -r requirements.txt"
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=c4161de17790461d95283922109d0a07efcfd29f35e824b4cac8fbc1d0f9aa86
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+script:
+  - pytest --cov=app
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+after_success:
+  - coveralls
