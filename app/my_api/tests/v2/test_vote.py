@@ -24,10 +24,10 @@ class TestVote(unittest.TestCase):
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phoneNumber": "0778082345",
-            "passportUrl": "jdkjfld.com",
+            "phonenumber": "0778082345",
+            "passporturl": "jdkjfld.com",
             "password": "password",
-            "passwordConfirm": "password"
+            "passwordconfirm": "password"
         }
         # login variables
         self.login = {
