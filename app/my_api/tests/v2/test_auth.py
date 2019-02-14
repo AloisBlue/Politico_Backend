@@ -330,8 +330,9 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def tearDown(self):
+        schema_candidate = """DROP TABLE if exists "Candidates";"""
         schema_user = """DROP TABLE if exists "users";"""
-        schemas = [schema_user]
+        schemas = [schema_candidate, schema_user]
         for schema in schemas:
             if schema:
                 self.cur.execute(schema)

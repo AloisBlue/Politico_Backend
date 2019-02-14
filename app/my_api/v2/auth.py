@@ -158,7 +158,7 @@ class LoginUser(Resource):
             if not email:
                 return {'Message': 'Email field is empty.'}, 400
             elif not password:
-                return {'Message': 'Password field is empty'}, 400
+                return {'Message': 'You must provide a password'}, 400
             elif not validators.email(email):
                 return {'Message', 'Email format is invalid'}, 400
             else:
