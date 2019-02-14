@@ -65,6 +65,16 @@ class RegisterUser(Resource):
     )
 
     def post(self):
+        cur.execute(
+                """CREATE TABLE if not EXISTS Candidates(
+                   candidate_id serial PRIMARY KEY,
+                   firstname varchar (50) NOT NULL,
+                   lastname varchar (50) NOT NULL,
+                   office varchar (50) NOT NULL,
+                   party varchar (50) NOT NULL,
+                   user_id int,
+                   FOREIGN KEY (user_id) REFERENCES users(user_id)
+                   );""")
         data = RegisterUser.parser.parse_args()
         email = data['email']
         firstname = data['firstname']
