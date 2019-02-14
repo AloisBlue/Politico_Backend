@@ -99,7 +99,7 @@ class RegisterUser(Resource):
             elif not validators.email(email):
                 return {'Message': 'Email format not correct'}, 400
             elif not validators.url(passporturl):
-                return {'Message': 'Passport URL is invalid'}
+                return {'Message': 'The passport URL is invalid'}, 400
             else:
                 break
 

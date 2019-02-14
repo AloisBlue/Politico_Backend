@@ -25,7 +25,17 @@ class TestAuth(unittest.TestCase):
             "lastname": "Blue",
             "othername": "Success",
             "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "passporturl": "https://miro.medium.com/max/2400/1*hiAQNjsT30LuqlZRmpdJkQ.jpeg",
+            "password": "password",
+            "passwordconfirm": "password"
+        }
+        self.invalid_url = {
+            "email": "aloismburu@gmail.com",
+            "firstname": "Alois",
+            "lastname": "Blue",
+            "othername": "Success",
+            "phonenumber": "0778082345",
+            "passporturl": "flfd.com",
             "password": "password",
             "passwordconfirm": "password"
         }
@@ -174,6 +184,14 @@ class TestAuth(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Account for Alois was succesfully created!!!")
         self.assertEqual(201, response.status_code)
+
+    def test_invalid_url(self):
+        response = self.Client.post('/api/v2/auth/signup',
+                                    data=json.dumps(self.invalid_url),
+                                    content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result['Message'], "The passport URL is invalid")
+        self.assertEqual(400, response.status_code)
 
     def test_user_exists(self):
         resp = self.Client.post('/api/v2/auth/signup',
