@@ -24,130 +24,120 @@ class TestAuth(unittest.TestCase):
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "https://miro.medium.com/max/2400/1*hiAQNjsT30LuqlZRmpdJkQ.jpeg",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
-        }
-        self.invalid_url = {
-            "email": "aloismburu@gmail.com",
-            "firstname": "Alois",
-            "lastname": "Blue",
-            "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "flfd.com",
-            "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.sign_bad_email_format = {
             "email": "aloismburu.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.password_less = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "pasord",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.password_match = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "pagaword"
+            "passwordConfirm": "pagaword"
         }
         self.empty_email = {
             "email": "",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_firstname = {
             "email": "aloismburu@gmail.com",
             "firstname": "",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_lastname = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_othername = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_phonenumber = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_passport_url = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "",
+            "phoneNumber": "0778082345",
+            "passportUrl": "",
             "password": "password",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_password = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "",
-            "passwordconfirm": "password"
+            "passwordConfirm": "password"
         }
         self.empty_password_confirm = {
             "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
-            "phonenumber": "0778082345",
-            "passporturl": "jdkjfld.com",
+            "phoneNumber": "0778082345",
+            "passportUrl": "jdkjfld.com",
             "password": "password",
-            "passwordconfirm": ""
+            "passwordConfirm": ""
         }
 
         # login variables
@@ -184,14 +174,6 @@ class TestAuth(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Account for Alois was succesfully created!!!")
         self.assertEqual(201, response.status_code)
-
-    def test_invalid_url(self):
-        response = self.Client.post('/api/v2/auth/signup',
-                                    data=json.dumps(self.invalid_url),
-                                    content_type='application/json')
-        result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "The passport URL is invalid")
-        self.assertEqual(400, response.status_code)
 
     def test_user_exists(self):
         resp = self.Client.post('/api/v2/auth/signup',
