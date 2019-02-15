@@ -326,13 +326,14 @@ class TestAuth(unittest.TestCase):
                                     data=json.dumps(self.login_empty_password),
                                     content_type='application/json')
         result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "You must provide a password ")
+        self.assertEqual(result['Message'], "You must provide a password")
         self.assertEqual(400, response.status_code)
 
     def tearDown(self):
-        schema_candidate = """DROP TABLE if exists "Candidates";"""
-        schema_user = """DROP TABLE if exists "users";"""
-        schemas = [schema_candidate, schema_user]
+        schema_candidate = """DROP TABLE if exists "candidates" CASCADE;"""
+        schema_user = """DROP TABLE if exists "users" CASCADE;"""
+        schema_vote = """DROP TABLE if exists "votes" CASCADE;"""
+        schemas = [schema_candidate, schema_user, schema_vote]
         for schema in schemas:
             if schema:
                 self.cur.execute(schema)
