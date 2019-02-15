@@ -1,7 +1,9 @@
 # app/__init__.py
 
+import os
 from flask import Flask, Blueprint, render_template
 from flask_restful import Resource, Api
+from flask_jwt_extended import JWTManager
 
 # local imports
 from config import config
@@ -24,6 +26,9 @@ def create_app(config_value):
 
     # Config file
     app.config.from_object(config[config_value])
+    app.config['PROPAGATE_EXCEPTIONS'] = True
+
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     app.register_blueprint(v1, url_prefix='/api/v1')
     app.register_blueprint(v2, url_prefix='/api/v2')
@@ -34,6 +39,8 @@ def create_app(config_value):
     @app.route('/')
     def heroku():
         return render_template('index.html')
+
+    JWTManager(app)
 
     return app
 

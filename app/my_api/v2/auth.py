@@ -4,6 +4,9 @@ from flask_restful import Resource, reqparse
 from flask_bcrypt import Bcrypt
 import psycopg2
 import validators
+from flask_jwt_extended import (create_access_token, create_refresh_token,
+                                jwt_required, jwt_refresh_token_required,
+                                get_jwt_identity, get_raw_jwt)
 
 # local imports
 from ..database import database
@@ -126,7 +129,10 @@ class RegisterUser(Resource):
                 'email': data['email'], 'firstname': data['firstname'], 'lastname': data['lastname'], 'othername': data['othername'], 'phonenumber': data['phonenumber'], 'passporturl': data['passporturl'], 'password_hash': password_hash, 'isadmin': isAdmin
             })
             connection.commit()
-            return {'Message': 'Account for {} was succesfully created!!!'.format(firstname)}, 201
+            access_token = create_access_token(identity=email)
+            refresh_token = create_refresh_token(identity=email)
+            return {'Message': 'Account for {} was succesfully created!!!'.format(firstname),
+                    'Access Token': access_token}, 201
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -172,7 +178,10 @@ class LoginUser(Resource):
             result = cur.fetchone()
             user_exists = result[0]
             if Bcrypt().check_password_hash(user_exists, password):
-                return {'Message': 'Logged in as {}'.format(email)}, 200
+                access_token = create_access_token(identity=email)
+                refresh_token = create_refresh_token(identity=email)
+                return {'Message': 'Logged in as {}'.format(email),
+                        'Access Token': access_token}, 201
             else:
                 return {'Message': 'Invalid credentials'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
