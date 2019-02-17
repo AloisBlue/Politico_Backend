@@ -177,7 +177,7 @@ class LoginUser(Resource):
             # check if email exists
             result = cur.fetchone()
             user_exists = result[0]
-            if Bcrypt().check_password_hash(user_exists, password):
+            if Bcrypt().check_password_hash(user_exists, password):s
                 access_token = create_access_token(identity=email)
                 refresh_token = create_refresh_token(identity=email)
                 return {'Message': 'Logged in as {}'.format(email),
