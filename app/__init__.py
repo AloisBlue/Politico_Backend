@@ -11,7 +11,7 @@ from config import config
 from .my_api.v1.parties import CreateParty, GetAllParties, PartyById
 from .my_api.v1.offices import CreateOffice, GetAllOffices, OfficeById
 from .my_api.v2.auth import RegisterUser, LoginUser
-from .my_api.v2.vote import RegisterCandidate, CastVote
+from .my_api.v2.vote import RegisterCandidate, CastVote, GetVotes
 from.my_api.database import database_init
 
 v1 = Blueprint('api', __name__)
@@ -59,3 +59,4 @@ api_v2.add_resource(RegisterUser, '/auth/signup')
 api_v2.add_resource(LoginUser, '/auth/login')
 api_v2.add_resource(RegisterCandidate, '/vote/candidate')
 api_v2.add_resource(CastVote, '/vote')
+api_v2.add_resource(GetVotes, '/vote/<int:office_serial>')
