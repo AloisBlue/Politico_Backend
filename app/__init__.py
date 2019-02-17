@@ -4,6 +4,7 @@ import os
 from flask import Flask, Blueprint, render_template
 from flask_restful import Resource, Api
 from flask_jwt_extended import JWTManager
+from dotenv import load_dotenv
 
 # local imports
 from config import config
@@ -41,6 +42,8 @@ def create_app(config_value):
         return render_template('index.html')
 
     JWTManager(app)
+
+    load_dotenv()
 
     return app
 

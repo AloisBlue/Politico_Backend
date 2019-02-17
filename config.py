@@ -1,5 +1,6 @@
 # config.py
 
+
 class Configurations():
     """docstring for Configurations class."""
     DEBUG = False
@@ -27,7 +28,7 @@ config = {
     }
 
 config = {
-'development': Develop,
-'testing': Testing,
-'production': ProductionConfig
+    'development': Develop,
+    'testing': Testing,
+    'production': ProductionConfig
 }

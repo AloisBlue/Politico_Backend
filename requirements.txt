@@ -26,6 +26,7 @@ py==1.7.0
 pycparser==2.19
 pytest==4.2.0
 pytest-cov==2.6.1
+python-dotenv==0.10.1
 pytz==2018.9
 requests==2.21.0
 six==1.12.0
