@@ -184,6 +184,7 @@ class LoginUser(Resource):
                         'Access Token': access_token}, 201
             else:
                 return {'Message': 'Invalid credentials'}, 403
+
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)

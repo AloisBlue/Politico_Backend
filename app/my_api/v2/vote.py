@@ -74,7 +74,7 @@ class RegisterCandidate(Resource):
                 connection.commit()
                 return {'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office), 'Details': data}, 201
             else:
-                return {"Message": "We have already received your request as an aspirant"}
+                return {"Message": "You have already registered as a candidate for {}.".format(office)}
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -103,6 +103,7 @@ class CastVote(Resource):
         help="Mca not selected"
     )
 
+    @jwt_required
     def post(self):
         data = CastVote.parser.parse_args()
         president = data['president']
@@ -119,14 +120,26 @@ class CastVote(Resource):
             else:
                 break
         try:
-            # sample user_id
-            user_id = 1
-            cast_date = datetime.datetime.utcnow()
-            cur.execute("INSERT INTO Votes(user_id, cast_date, president, governor, mca) VALUES(%(user_id)s, %(cast_date)s, %(president)s, %(governor)s, %(mca)s);", {
-                'user_id': user_id, 'cast_date': cast_date, 'president': president, 'governor': governor, 'mca': mca
+            # get user_id
+            current_user = get_jwt_identity()
+            cur.execute("SELECT user_id FROM Users WHERE email=%(current_user)s;", {
+                'current_user': current_user
             })
-            connection.commit()
-            return {'Message': 'Vote casted!!!'}, 200
+            result = cur.fetchone()
+            user_id = result[0]
+            cur.execute("SELECT * FROM Votes WHERE user_id=%(user_id)s;", {
+                'user_id': user_id
+            })
+            user_voted = cur.fetchone()
+            cast_date = datetime.datetime.utcnow()
+            if user_voted is None:
+                cur.execute("INSERT INTO Votes(user_id, cast_date, president, governor, mca) VALUES(%(user_id)s, %(cast_date)s, %(president)s, %(governor)s, %(mca)s);", {
+                    'user_id': user_id, 'cast_date': cast_date, 'president': president, 'governor': governor, 'mca': mca
+                    })
+                connection.commit()
+                return {'Message': 'Vote casted!!!'}, 200
+            else:
+                return {'Message': 'You have already voted'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
