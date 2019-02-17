@@ -1,12 +1,15 @@
 # app/my_api/v2/auth.py
 # imports
 from flask_restful import Resource, reqparse
+from flask_bcrypt import Bcrypt
 import psycopg2
-import bcrypt
 import validators
 
 # local imports
 from ..database import database
+
+connection = database()
+cur = connection.cursor()
 
 
 class RegisterUser(Resource):
@@ -62,8 +65,16 @@ class RegisterUser(Resource):
     )
 
     def post(self):
-        connection = database()
-        cur = connection.cursor()
+        cur.execute(
+                """CREATE TABLE if not EXISTS Candidates(
+                   candidate_id serial PRIMARY KEY,
+                   firstname varchar (50) NOT NULL,
+                   lastname varchar (50) NOT NULL,
+                   office varchar (50) NOT NULL,
+                   party varchar (50) NOT NULL,
+                   user_id int,
+                   FOREIGN KEY (user_id) REFERENCES users(user_id)
+                   );""")
         data = RegisterUser.parser.parse_args()
         email = data['email']
         firstname = data['firstname']
@@ -90,7 +101,7 @@ class RegisterUser(Resource):
                 return {'Message': 'Passport url is needed'}, 400
             elif not password:
                 return {'Message': 'Password is empty'}, 400
-            elif not  passwordconfirm:
+            elif not passwordconfirm:
                 return {'Message': 'Password confirm is empty'}, 400
             elif len(password) < 8:
                 return {'Message': 'Password should have minimum of 8 characters'}, 400
@@ -103,7 +114,7 @@ class RegisterUser(Resource):
             else:
                 break
 
-        password_hash = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+        password_hash = Bcrypt().generate_password_hash(password).decode()
         try:
             cur.execute("SELECT * FROM Users WHERE email = %(email)s",
                         {'email': data['email']})
@@ -115,7 +126,55 @@ class RegisterUser(Resource):
                 'email': data['email'], 'firstname': data['firstname'], 'lastname': data['lastname'], 'othername': data['othername'], 'phonenumber': data['phonenumber'], 'passporturl': data['passporturl'], 'password_hash': password_hash, 'isadmin': isAdmin
             })
             connection.commit()
-            return {'Message': 'Account for {} was succesfully created!!!'.format(data['firstname'])}, 201
+            return {'Message': 'Account for {} was succesfully created!!!'.format(firstname)}, 201
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
+
+
+class LoginUser(Resource):
+    """docstring for LoginUser."""
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'email',
+        type=str,
+        required=True,
+        help="Email address required"
+    )
+    parser.add_argument(
+        'password',
+        type=str,
+        required=True,
+        help="Password is required"
+    )
+
+    def post(self):
+        data = LoginUser.parser.parse_args()
+        email = data['email']
+        password = data['password']
+        # validations
+        while True:
+            if not email:
+                return {'Message': 'Email field is empty.'}, 400
+            elif not password:
+                return {'Message': 'You must provide a password'}, 400
+            elif not validators.email(email):
+                return {'Message', 'Email format is invalid'}, 400
+            else:
+                break
+        # login
+        try:
+            cur.execute("SELECT password_hash FROM Users WHERE email = %(email)s", {
+                'email': data['email']
+            })
+            # check if email exists
+            result = cur.fetchone()
+            user_exists = result[0]
+            if Bcrypt().check_password_hash(user_exists, password):
+                return {'Message': 'Logged in as {}'.format(email)}, 200
+            else:
+                return {'Message': 'Invalid credentials'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
