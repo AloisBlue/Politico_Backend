@@ -105,6 +105,16 @@ class CastVote(Resource):
 
     @jwt_required
     def post(self):
+        cur.execute(
+            """CREATE TABLE if not EXISTS Petitions(
+            petition_id serial PRIMARY KEY,
+            petition_date TIMESTAMP,
+            user_id int,
+            created_by varchar (50) NOT NULL,
+            office varchar (50) NOT NULL,
+            body varchar (100) NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES Users(user_id));"""
+        )
         data = CastVote.parser.parse_args()
         president = data['president']
         governor = data['governor']
@@ -182,3 +192,38 @@ class GetVotes(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class FilePetition(Resource):
+    """docstring for FilePetition."""
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'body',
+        type=str,
+        required=True,
+        help="Body description required"
+    )
+
+    @jwt_required
+    def post(self):
+        data = FilePetition.parser.parse_args()
+        body = data['body']
+        petition_date = datetime.datetime.utcnow()
+        current_user = get_jwt_identity()
+        # get user details
+        cur.execute("SELECT user_id, firstname FROM Users WHERE email=%(current_user)s;", {
+            'current_user': current_user
+        })
+        result = cur.fetchone()
+        user_id = result[0]
+        created_by = result[1]
+        cur.execute("SELECT office FROM Candidates WHERE user_id=%(user_id)s;", {
+            'user_id': user_id
+        })
+        result2 = cur.fetchone()
+        office = result2[0]
+        cur.execute("INSERT INTO Petitions(petition_date, user_id, created_by, office, body) VALUES(%(petition_date)s, %(user_id)s, %(created_by)s, %(office)s, %(body)s);", {
+                'petition_date': petition_date, 'user_id': user_id, 'created_by': created_by, 'office': office, 'body': body
+                })
+        connection.commit()
+        return {'Message': 'Your petition is received and recorded'}, 200
