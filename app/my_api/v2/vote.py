@@ -222,8 +222,15 @@ class FilePetition(Resource):
         })
         result2 = cur.fetchone()
         office = result2[0]
-        cur.execute("INSERT INTO Petitions(petition_date, user_id, created_by, office, body) VALUES(%(petition_date)s, %(user_id)s, %(created_by)s, %(office)s, %(body)s);", {
-                'petition_date': petition_date, 'user_id': user_id, 'created_by': created_by, 'office': office, 'body': body
+        cur.execute("SELECT * FROM Petitions WHERE user_id=%(user_id)s;", {
+            'user_id': user_id
+        })
+        user_petitioned = cur.fetchone()
+        if user_petitioned is None:
+            cur.execute("INSERT INTO Petitions(petition_date, user_id, created_by, office, body) VALUES(%(petition_date)s, %(user_id)s, %(created_by)s, %(office)s, %(body)s);", {
+                    'petition_date': petition_date, 'user_id': user_id, 'created_by': created_by, 'office': office, 'body': body
                 })
-        connection.commit()
-        return {'Message': 'Your petition is received and recorded'}, 200
+            connection.commit()
+            return {'Message': 'Your petition is received and recorded'}, 200
+        else:
+            return {'Message': 'You have already filed a petition'}, 403
