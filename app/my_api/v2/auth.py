@@ -189,3 +189,47 @@ class LoginUser(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class ResetPassword(Resource):
+    """docstring for ResetPassword."""
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'email',
+        type=str,
+        required=True,
+        help="Email field empty"
+    )
+    parser.add_argument(
+        'password',
+        type=str,
+        required=True,
+        help="Password field empty"
+    )
+    parser.add_argument(
+        'passwordconfirm',
+        type=str,
+        required=True,
+        help="Confirm password field empty"
+    )
+
+    def put(self):
+        data = ResetPassword.parser.parse_args()
+        email = data['email']
+        password = data['password']
+        passwordconfirm = data['passwordconfirm']
+        while True:
+            if not email:
+                return {'Message': 'Email cannot be empty'}, 400
+            elif not password:
+                return {'Message': 'Password cannot be empty'}, 400
+            elif not passwordconfirm:
+                return {'Message': 'Confirm password cannot be empty'}, 400
+            else:
+                break
+        password_hash = Bcrypt().generate_password_hash(password).decode()
+        cur.execute("UPDATE Users SET password_hash = %(password_hash)s WHERE email = %(email)s", {
+            'password_hash': password_hash, 'email': email
+        })
+        connection.commit()
+        return {'Message': 'Password reset was successful'}, 200
