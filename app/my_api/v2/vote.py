@@ -144,3 +144,41 @@ class CastVote(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class GetVotes(Resource):
+    """docstring for GetVotes."""
+    @jwt_required
+    def get(self, office_serial):
+        try:
+            # get presidents
+            cur.execute("SELECT president FROM Votes;")
+            president = {
+                "President's Office Results": cur.fetchall()
+            }
+            # get governor
+            cur.execute("SELECT governor FROM Votes;")
+            governor = {
+                "Governor's Office Results": cur.fetchall()
+            }
+            # get mca
+            cur.execute("SELECT mca FROM Votes;")
+            mca = {
+                "Mca's Office Results": cur.fetchall()
+            }
+            # office serials
+            # 1 for president
+            # 2 for governor
+            # 3 for mca
+            if office_serial == 1:
+                return {'Message': president}, 200
+            elif office_serial == 2:
+                return {'Message': governor}, 200
+            elif office_serial == 3:
+                return {'Message': mca}, 200
+            else:
+                return {'Message': 'Sorry, no office registered under that serial'}, 404
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
