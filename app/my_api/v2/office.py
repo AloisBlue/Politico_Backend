@@ -51,3 +51,16 @@ class CreateOfficeV2(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class GetOfficesV2(Resource):
+    """docstring for GetOfficesV2."""
+    def get(self):
+        try:
+            cur.execute("SELECT * FROM Offices;")
+            offices = cur.fetchall()
+            return {'Message': offices}
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
