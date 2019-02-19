@@ -73,3 +73,41 @@ class GetPartiesV2(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class EditPartyV2(Resource):
+    """docstring for EditPartyV2."""
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'name',
+        type=str,
+        required=True,
+        help="Name is empty"
+    )
+    parser.add_argument(
+        'hqaddress',
+        type=str,
+        required=True,
+        help="Hq address field empty"
+    )
+
+    @classmethod
+    def put(self, party_id):
+        data = EditPartyV2.parser.parse_args()
+        name = data['name']
+        hqaddress = data['hqaddress']
+        while True:
+            if not name:
+                return {'Message': 'Name cannot be empty'}, 400
+            elif not hqaddress:
+                return {'Message': 'Hq address cannot be empty'}, 400
+            else:
+                break
+        try:
+            cur.execute("UPDATE Parties SET name = %s, hqaddress = %s WHERE party_id = %s", (name, hqaddress, party_id))
+            connection.commit()
+            return {'Message': 'The party was updated'}, 200
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
