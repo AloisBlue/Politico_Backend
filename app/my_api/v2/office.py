@@ -64,3 +64,17 @@ class GetOfficesV2(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class GetOfficeByIdV2(Resource):
+    """docstring for EditPartyV2."""
+    @classmethod
+    def get(self, office_id):
+        try:
+            cur.execute("SELECT * FROM Offices WHERE office_id = %s", [office_id])
+            office = cur.fetchall()
+            return {'Message': office}
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
