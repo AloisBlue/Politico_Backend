@@ -24,7 +24,7 @@ before_script:
 
 
 script:
-  - pytest --cov=app
+  - pytest --cov= app/my_api/tests/v2/test_auth.py
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

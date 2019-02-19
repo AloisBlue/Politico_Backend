@@ -181,7 +181,7 @@ class LoginUser(Resource):
                 access_token = create_access_token(identity=email)
                 refresh_token = create_refresh_token(identity=email)
                 return {'Message': 'Logged in as {}'.format(email),
-                        'Access Token': access_token}, 201
+                        'Access Token': access_token}, 200
             else:
                 return {'Message': 'Invalid credentials'}, 403
 

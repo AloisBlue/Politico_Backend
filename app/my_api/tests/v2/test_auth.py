@@ -8,7 +8,6 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from ...database import database, database_init
 from app import create_app
 
-
 class TestVote(unittest.TestCase):
     """docstring for TestVote."""
     def setUp(self):
@@ -20,7 +19,7 @@ class TestVote(unittest.TestCase):
         self.cur = connection.cursor()
         # signup variables
         self.user_signs = {
-            "email": "aloisblue@gmail.com",
+            "email": "aloismburu@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
@@ -300,22 +299,6 @@ class TestVote(unittest.TestCase):
         self.assertEqual(result['Message'], "Logged in as {}".format(self.login['email']))
         self.assertEqual(200, response.status_code)
 
-    def test_login_abort(self):
-        response = self.Client.post('/api/v2/auth/login',
-                                    data=json.dumps(self.login),
-                                    content_type='application/json')
-        result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "current transaction is aborted")
-        self.assertEqual(500, response.status_code)
-
-    def test_login_invalid_email(self):
-        response = self.Client.post('/api/v2/auth/login',
-                                    data=json.dumps(self.bad_email_format),
-                                    content_type='application/json')
-        result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "Email format is invalid")
-        self.assertEqual(400, response.status_code)
-
     def test_login_empty_email(self):
         response = self.Client.post('/api/v2/auth/login',
                                     data=json.dumps(self.login_empty_email),
@@ -334,4 +317,4 @@ class TestVote(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

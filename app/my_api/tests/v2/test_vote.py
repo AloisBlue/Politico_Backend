@@ -42,7 +42,7 @@ class TestVote(unittest.TestCase):
         }
         self.vote = {
             "president": "John",
-            "governor": "Peter",
+            "governor": "Alois",
             "mca": "Jakes"
         }
 
