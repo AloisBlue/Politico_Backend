@@ -25,7 +25,7 @@ before_script:
 
 
 script:
-  - pytest --cov= app/my_api/tests/v2/test_auth.py
+  - coverage run --source=app/my_api/tests/v2 -m pytest && coverage report
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
