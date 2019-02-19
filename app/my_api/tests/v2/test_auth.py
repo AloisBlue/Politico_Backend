@@ -329,7 +329,7 @@ class TestAuth(unittest.TestCase):
                                     content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "Invalid credentials")
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(403, response.status_code)
 
     def test_login_empty_email(self):
         response = self.Client.post('/api/v2/auth/login',
@@ -344,7 +344,7 @@ class TestAuth(unittest.TestCase):
                                     data=json.dumps(self.login_empty_password),
                                     content_type='application/json')
         result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "You must provide a password ")
+        self.assertEqual(result['Message'], "You must provide a password")
         self.assertEqual(400, response.status_code)
 
     def tearDown(self):

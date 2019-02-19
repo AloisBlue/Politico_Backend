@@ -36,13 +36,13 @@ class TestVote(unittest.TestCase):
         }
 
         self.apply_candidate = {
-            "email": "aloismburu@gmail.com",
             "office": "National",
             "party": "Chap"
         }
         self.vote = {
-            "office": "National",
-            "candidate": "Alois"
+            "president": "Jacob",
+            "governor": "Noah",
+            "mca": "Madiva"
         }
 
         with self.app.app_context():
@@ -88,8 +88,8 @@ class TestVote(unittest.TestCase):
         self.assertEqual(200, response.status_code)
 
     def tearDown(self):
-        schema_user = """DROP TABLE if exists "users";"""
-        schema_vote = """DROP TABLE if exists "vote";"""
+        schema_user = """DROP TABLE if exists "users" CASCADE;"""
+        schema_vote = """DROP TABLE if exists "vote" CASCADE;"""
         schemas = [schema_user, schema_vote]
         for schema in schemas:
             if schema:
