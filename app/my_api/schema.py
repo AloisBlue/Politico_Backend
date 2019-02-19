@@ -9,4 +9,10 @@ passportUrl varchar (255) NOT NULL,
 password_hash varchar(64) NOT NULL,
 isAdmin boolean DEFAULT 'f'
 );"""
-queries = [userstable]
+partiestable = """CREATE TABLE if not exists Parties(
+party_id SERIAL PRIMARY KEY,
+name varchar (50) NOT NULL,
+hqAddress varchar (50) NOT NULL,
+logoUrl varchar (150) NOT NULL
+);"""
+queries = [userstable, partiestable]
