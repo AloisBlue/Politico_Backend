@@ -213,6 +213,7 @@ class ResetPassword(Resource):
         help="Confirm password field empty"
     )
 
+    @classmethod
     def put(self):
         data = ResetPassword.parser.parse_args()
         email = data['email']
