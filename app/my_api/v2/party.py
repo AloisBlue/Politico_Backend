@@ -92,6 +92,17 @@ class EditPartyV2(Resource):
     )
 
     @classmethod
+    def get(self, party_id):
+        try:
+            cur.execute("SELECT * FROM Parties WHERE party_id = %s", [party_id])
+            party = cur.fetchall()
+            return {'Message': party}
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
+
+    @classmethod
     def put(self, party_id):
         data = EditPartyV2.parser.parse_args()
         name = data['name']
@@ -107,6 +118,16 @@ class EditPartyV2(Resource):
             cur.execute("UPDATE Parties SET name = %s, hqaddress = %s WHERE party_id = %s", (name, hqaddress, party_id))
             connection.commit()
             return {'Message': 'The party was updated'}, 200
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
+
+    @classmethod
+    def delete(self, party_id):
+        try:
+            cur.execute("DELETE FROM Parties WHERE party_id = %s;", [party_id])
+            return {'Message': 'Party deleted'}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
