@@ -162,7 +162,7 @@ class LoginUser(Resource):
         # validations
         while True:
             if not email:
-                return {'Message': 'Email field is empty.'}, 400
+                return {'Message': 'You must provide an email'}, 400
             elif not password:
                 return {'Message': 'You must provide a password'}, 400
             elif not validators.email(email):

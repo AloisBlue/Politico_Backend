@@ -9,8 +9,8 @@ from ...database import database, database_init
 from app import create_app
 
 
-class TestAuth(unittest.TestCase):
-    """docstring for TestAuth."""
+class TestVote(unittest.TestCase):
+    """docstring for TestVote."""
     def setUp(self):
         self.app = create_app('testing')
         self.Client = self.app.test_client()
@@ -20,7 +20,7 @@ class TestAuth(unittest.TestCase):
         self.cur = connection.cursor()
         # signup variables
         self.user_signs = {
-            "email": "aloismburu@gmail.com",
+            "email": "aloisblue@gmail.com",
             "firstname": "Alois",
             "lastname": "Blue",
             "othername": "Success",
@@ -159,10 +159,6 @@ class TestAuth(unittest.TestCase):
             "email": "aloismburu.com",
             "password": "password"
         }
-        self.invalid_credentials = {
-            "email": "aloismburu@gmail.com",
-            "password": "pasdkld"
-        }
         self.login_empty_email = {
             "email": "",
             "password": "password"
@@ -182,8 +178,8 @@ class TestAuth(unittest.TestCase):
                                     data=json.dumps(self.user_signs),
                                     content_type='application/json')
         result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "Account for Alois was succesfully created!!!")
-        self.assertEqual(201, response.status_code)
+        self.assertEqual(result['Message'], "User with such email already exists.")
+        self.assertEqual(400, response.status_code)
 
     def test_invalid_url(self):
         response = self.Client.post('/api/v2/auth/signup',
@@ -320,17 +316,6 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(result['Message'], "Email format is invalid")
         self.assertEqual(400, response.status_code)
 
-    def test_login_invalid_credentials(self):
-        resp = self.Client.post('/api/v2/auth/signup',
-                                data=json.dumps(self.user_signs),
-                                content_type='application/json')
-        response = self.Client.post('/api/v2/auth/login',
-                                    data=json.dumps(self.invalid_credentials),
-                                    content_type='application/json')
-        result = json.loads(response.data.decode())
-        self.assertEqual(result['Message'], "Invalid credentials")
-        self.assertEqual(403, response.status_code)
-
     def test_login_empty_email(self):
         response = self.Client.post('/api/v2/auth/login',
                                     data=json.dumps(self.login_empty_email),
@@ -346,13 +331,6 @@ class TestAuth(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "You must provide a password")
         self.assertEqual(400, response.status_code)
-
-    def tearDown(self):
-        schema_user = """DROP TABLE if exists "users" CASCADE;"""
-        schemas = [schema_user]
-        for schema in schemas:
-            if schema:
-                self.cur.execute(schema)
 
 
 if __name__ == '__main__':

@@ -36,13 +36,14 @@ class TestVote(unittest.TestCase):
         }
 
         self.apply_candidate = {
+            "email": "aloismburu@gmail.com",
             "office": "National",
             "party": "Chap"
         }
         self.vote = {
-            "president": "Jacob",
-            "governor": "Noah",
-            "mca": "Madiva"
+            "president": "John",
+            "governor": "Peter",
+            "mca": "Jakes"
         }
 
         with self.app.app_context():
@@ -89,8 +90,9 @@ class TestVote(unittest.TestCase):
 
     def tearDown(self):
         schema_user = """DROP TABLE if exists "users" CASCADE;"""
+        schema_candidate = """DROP TABLE if exists "candidates" CASCADE;"""
         schema_vote = """DROP TABLE if exists "vote" CASCADE;"""
-        schemas = [schema_user, schema_vote]
+        schemas = [schema_user, schema_candidate, schema_vote]
         for schema in schemas:
             if schema:
                 self.cur.execute(schema)
