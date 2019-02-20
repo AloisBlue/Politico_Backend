@@ -13,7 +13,7 @@ from .my_api.v1.offices import CreateOffice, GetAllOffices, OfficeById
 from .my_api.v2.auth import RegisterUser, LoginUser, ResetPassword
 from .my_api.v2.vote import RegisterCandidate, CastVote, GetVotes, FilePetition
 from .my_api.v2.party import CreatePartyV2, GetPartiesV2, EditPartyV2
-from .my_api.v2.office import CreateOfficeV2
+from .my_api.v2.office import CreateOfficeV2, GetOfficesV2
 from.my_api.database import database_init
 
 v1 = Blueprint('api', __name__)
@@ -68,3 +68,4 @@ api_v2.add_resource(CreatePartyV2, '/parties')
 api_v2.add_resource(GetPartiesV2, '/parties')
 api_v2.add_resource(EditPartyV2, '/parties/<int:party_id>')
 api_v2.add_resource(CreateOfficeV2, '/offices')
+api_v2.add_resource(GetOfficesV2, '/offices')
