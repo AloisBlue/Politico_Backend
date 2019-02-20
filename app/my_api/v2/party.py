@@ -153,11 +153,20 @@ class EditPartyV2(Resource):
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
 
-    @classmethod
+    @jwt_required
     def delete(self, party_id):
         try:
-            cur.execute("DELETE FROM Parties WHERE party_id = %s;", [party_id])
-            return {'Message': 'Party deleted'}, 200
+            current_user = get_jwt_identity()
+            cur.execute("SELECT isadmin FROM Users WHERE email = %(email)s;", {
+                'email': current_user
+            })
+            user_exists = cur.fetchone()
+            is_admin = user_exists[0]
+            if is_admin:
+                cur.execute("DELETE FROM Parties WHERE party_id = %s;", [party_id])
+                return {'Message': 'Party deleted'}, 200
+            else:
+                return {'Message': 'This pannel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
