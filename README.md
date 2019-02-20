@@ -16,8 +16,11 @@ Flask restful
 #### Pivotal tracker dashboard
 https://www.pivotaltracker.com/n/projects/2244219
 #### How to run this backend app
+- Having set a postgres database:
 - Clone the repo to your computer via ***git clone https://github.com/AloisBlue/Politico_Backend.git***
 - Go to app directory ***cd Politico_Backend***
+- Set .env file (variables matter) ***echo export DATABASE_URL='dbname=postgres, user=postgres, password' >> .env***
+- Adding secret key in .env ***echo export SECRET_KEY='secret' >> .env***
 - Make a virtual environment ***python3 -m venv venv***
 - Activate the above venv ***source venv/bin/activate***
 - Export environment variable i.e. ***export FLASK_CONFIG=development && export FLASK_APP=run.py***
@@ -34,7 +37,21 @@ https://www.pivotaltracker.com/n/projects/2244219
 |POST   |/api/v1/offices   |Create a new non existent office   |
 |PUT   |/api/v1/parties/1   |Edit an existing office with new details   |
 |DELETE   |/api/v1/parties   |Delete an existing office out of the data structure   |
-
+#### Version 2 Routes
+|ACTION   |ROUTE   |DESCRIPTION   |
+|---|---|---|
+|POST  | /api/v2/auth/signup  |Sign up for an account   |
+|POST | /api/v2/auth/login  |Enables logging in   |
+|POST  |/api/v2/parties   |Creates a political party   |
+|POST   |/api/v2/offices   |Creates an office   |
+|POST   |/api/v2/vote   |Enables voting   |
+|POST   |/api/v2/vote/candidate   |Let's admin add user as a candidate   |
+|PUT   |/api/v2/parties/1   |Enables updating of a political party   |
+|DELETE   |/api/v2/parties/1   |Delete an existing party   |
+|GET   |/api/v2/vote   |Gets all votes   |
+|GET   |/api/v2/vote/1   |Gives results of a specific candidate   |
+|POST   |/api/v2/petition   |Files a petition   |
+|POST   |/api/v2/auth/resetpassword   |Resets a password   |
 #### Deployment
 Heroku
 #### Heroku link
