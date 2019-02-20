@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 import validators
 import psycopg2
+from flask_jwt_extended import (jwt_required, get_jwt_identity)
 
 # local imports
 from ..database import database
@@ -31,7 +32,7 @@ class CreatePartyV2(Resource):
         help="Logo url needed"
     )
 
-    @classmethod
+    @jwt_required
     def post(self):
         data = CreatePartyV2.parser.parse_args()
         name = ['name']
@@ -51,11 +52,29 @@ class CreatePartyV2(Resource):
                 break
 
         try:
-            cur.execute("INSERT INTO Parties(name, hqaddress, logourl) VALUES(%(name)s, %(hqaddress)s, %(logourl)s);", {
-                'name': data['name'], 'hqaddress': data['hqaddress'], 'logourl': data['logourl']
+            # check if user is admin
+            current_user = get_jwt_identity()
+            cur.execute("SELECT isadmin FROM Users WHERE email = %(email)s;", {
+                'email': current_user
             })
-            connection.commit()
-            return {'Message': 'Party added'}
+            user_exists = cur.fetchone()
+            is_admin = user_exists[0]
+            if is_admin:
+                # check if exists
+                cur.execute("SELECT * FROM Parties WHERE name = %(name)s;", {
+                    'name': data['name']
+                })
+                party_exist = cur.fetchone()
+                if party_exist is None:
+                    cur.execute("INSERT INTO Parties(name, hqaddress, logourl) VALUES(%(name)s, %(hqaddress)s, %(logourl)s);", {
+                        'name': data['name'], 'hqaddress': data['hqaddress'], 'logourl': data['logourl']
+                    })
+                    connection.commit()
+                    return {'Message': 'Party successfully added'}, 200
+                else:
+                    return {'Message': 'Party already exists'}, 400
+            else:
+                return {'Message': 'This panel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
