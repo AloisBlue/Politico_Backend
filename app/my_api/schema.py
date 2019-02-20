@@ -15,4 +15,9 @@ name varchar (50) NOT NULL,
 hqAddress varchar (50) NOT NULL,
 logoUrl varchar (150) NOT NULL
 );"""
-queries = [userstable, partiestable]
+officetable = """CREATE TABLE if not exists Offices(
+office_id SERIAL PRIMARY KEY,
+name varchar (50) NOT NULL,
+type varchar (50) NOT NULL
+);"""
+queries = [userstable, partiestable, officetable]
