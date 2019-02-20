@@ -122,7 +122,7 @@ class EditPartyV2(Resource):
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
 
-    @classmethod
+    @jwt_required
     def put(self, party_id):
         data = EditPartyV2.parser.parse_args()
         name = data['name']
@@ -135,9 +135,19 @@ class EditPartyV2(Resource):
             else:
                 break
         try:
-            cur.execute("UPDATE Parties SET name = %s, hqaddress = %s WHERE party_id = %s", (name, hqaddress, party_id))
-            connection.commit()
-            return {'Message': 'The party was updated'}, 200
+            # check for administrator
+            current_user = get_jwt_identity()
+            cur.execute("SELECT isadmin FROM Users WHERE email = %(email)s;", {
+                'email': current_user
+            })
+            user_exists = cur.fetchone()
+            is_admin = user_exists[0]
+            if is_admin:
+                cur.execute("UPDATE Parties SET name = %s, hqaddress = %s WHERE party_id = %s", (name, hqaddress, party_id))
+                connection.commit()
+                return {'Message': 'The party was updated'}, 200
+            else:
+                return {'Message': 'This pannel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
