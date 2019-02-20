@@ -111,7 +111,7 @@ class EditPartyV2(Resource):
         help="Hq address field empty"
     )
 
-    @classmethod
+    @jwt_required
     def get(self, party_id):
         try:
             cur.execute("SELECT * FROM Parties WHERE party_id = %s", [party_id])
