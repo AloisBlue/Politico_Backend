@@ -50,8 +50,26 @@ class CreatePartyV2(Resource):
             else:
                 break
 
-        cur.execute("INSERT INTO Parties(name, hqaddress, logourl) VALUES(%(name)s, %(hqaddress)s, %(logourl)s);", {
-            'name': data['name'], 'hqaddress': data['hqaddress'], 'logourl': data['logourl']
-        })
-        connection.commit()
-        return {'Message': 'Party added'}
+        try:
+            cur.execute("INSERT INTO Parties(name, hqaddress, logourl) VALUES(%(name)s, %(hqaddress)s, %(logourl)s);", {
+                'name': data['name'], 'hqaddress': data['hqaddress'], 'logourl': data['logourl']
+            })
+            connection.commit()
+            return {'Message': 'Party added'}
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
+
+
+class GetPartiesV2(Resource):
+    """docstring for GetPartiesV2."""
+    def get(self):
+        try:
+            cur.execute("SELECT * FROM Parties;")
+            parties = cur.fetchall()
+            return {'Message': parties}
+        except (Exception, psycopg2.DatabaseError) as error:
+            cur.execute("rollback;")
+            print(error)
+            return {'Message': 'current transaction is aborted'}, 500
