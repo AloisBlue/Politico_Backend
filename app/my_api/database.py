@@ -3,7 +3,7 @@
 import psycopg2
 import os
 
-from .schema import queries
+from .schema import queries, admin
 
 
 def database():
@@ -22,6 +22,7 @@ def database_init():
         for query in queries:
             if query:
                 cur.execute(query)
+        cur.execute(admin)
     except (Exception, psycopg2.DatabaseError) as error:
         cur.execute("rollback;")
         print(error)

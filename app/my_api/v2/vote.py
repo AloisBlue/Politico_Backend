@@ -16,6 +16,12 @@ class RegisterCandidate(Resource):
     """docstring for RegisterCandidate."""
     parser = reqparse.RequestParser()
     parser.add_argument(
+        'user_id',
+        type=str,
+        required=True,
+        help="User id required"
+    )
+    parser.add_argument(
         'office',
         type=str,
         required=True,
@@ -43,42 +49,55 @@ class RegisterCandidate(Resource):
         data = RegisterCandidate.parser.parse_args()
         office = data['office']
         party = data['party']
+        user_id = data['user_id']
         # validations
         while True:
             if not office:
                 return {'Message': 'Office is empty'}, 400
             elif not party:
                 return {'Message': 'Party is empty'}, 400
+            elif not user_id:
+                return {'Message': 'user_id is empty'}, 400
             else:
                 break
         try:
             # get user's details
             current_user = get_jwt_identity()
-            cur.execute("SELECT user_id, firstname, lastname FROM Users WHERE email=%(current_user)s;", {
-                'current_user': current_user
+            cur.execute("SELECT isadmin FROM Users WHERE email = %(email)s;", {
+                'email': current_user
             })
-            result = cur.fetchone()
-            user_id = result[0]
-            firstname = result[1]
-            lastname = result[2]
-            # check if user_id has registered already
-            cur.execute("SELECT * FROM Candidates WHERE user_id=%(user_id)s;", {
-                'user_id': user_id
-            })
-            user_id_exist = cur.fetchone()
-            if user_id_exist is None:
-                # register candidate
-                cur.execute("INSERT INTO Candidates(firstname, lastname, office, party, user_id) VALUES(%(firstname)s, %(lastname)s, %(office)s, %(party)s, %(user_id)s);", {
-                    'firstname': firstname, 'lastname': lastname, 'office': data['office'], 'party': data['party'], 'user_id': user_id
+            user_exists = cur.fetchone()
+            is_admin = user_exists[0]
+            if is_admin:
+                cur.execute("SELECT firstname, lastname FROM Users WHERE user_id=%(user_id)s;", {
+                    'user_id': user_id
                 })
-                connection.commit()
-                return {
-                    'status': 201,
-                    'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office), 'data': data}, 201
+                result = cur.fetchone()
+                firstname = result[0]
+                lastname = result[1]
+                # check if user_id has registered already
+                cur.execute("SELECT * FROM Candidates WHERE user_id=%(user_id)s;", {
+                    'user_id': user_id
+                })
+                user_id_exist = cur.fetchone()
+                if user_id_exist is None:
+                    # register candidate
+                    cur.execute("INSERT INTO Candidates(firstname, lastname, office, party, user_id) VALUES(%(firstname)s, %(lastname)s, %(office)s, %(party)s, %(user_id)s);", {
+                        'firstname': firstname, 'lastname': lastname, 'office': data['office'], 'party': data['party'], 'user_id': user_id
+                    })
+                    connection.commit()
+                    return {
+                        'status': 201,
+                        'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office), 'data': data}, 201
+                else:
+                    return {
+                        'status': 409,
+                        "Message": "You have already registered the candidate."}, 409
             else:
                 return {
-                    'status': 409,
-                    "Message": "You have already registered as a candidate for {}.".format(office)}, 409
+                    'status': 403,
+                    'Message': 'Adminstrators only'
+                }, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
