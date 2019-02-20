@@ -4,6 +4,7 @@ from flask_restful import Resource, reqparse
 from flask_bcrypt import Bcrypt
 import psycopg2
 import validators
+import re
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
@@ -106,6 +107,14 @@ class RegisterUser(Resource):
                 return {'Message': 'Password is empty'}, 400
             elif not passwordconfirm:
                 return {'Message': 'Password confirm is empty'}, 400
+            elif re.search('[a-z]', password) is None:
+                return {'Message': 'Password should have atleast one lowercase'}, 400
+            elif re.search('[0-9]', password) is None:
+                return {'Message': 'Password should contain atleast one digit'}, 400
+            elif re.search('[A-Z]', password) is None:
+                return {'Message': 'Password should have atleast one uppercase'}, 400
+            elif re.search("[$#@&]", password) is None:
+                return {'Message': 'Password should contain one of the symbols $#@&'}, 400
             elif len(password) < 8:
                 return {'Message': 'Password should have minimum of 8 characters'}, 400
             elif password != passwordconfirm:
