@@ -8,6 +8,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from ...database import database, database_init
 from app import create_app
 
+
 class TestVote(unittest.TestCase):
     """docstring for TestVote."""
     def setUp(self):
@@ -178,7 +179,7 @@ class TestVote(unittest.TestCase):
                                     content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "User with such email already exists.")
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(409, response.status_code)
 
     def test_invalid_url(self):
         response = self.Client.post('/api/v2/auth/signup',
@@ -197,7 +198,7 @@ class TestVote(unittest.TestCase):
                                     content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result['Message'], "User with such email already exists.")
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(409, response.status_code)
 
     def test_bad_email_format(self):
         response = self.Client.post('/api/v2/auth/signup',

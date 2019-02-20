@@ -124,7 +124,7 @@ class RegisterUser(Resource):
             # check whether user exists
             user_exists = cur.fetchone()
             if user_exists is not None:
-                return {'Message': 'User with such email already exists.'}, 400
+                return {'Message': 'User with such email already exists.'}, 409
             cur.execute("INSERT INTO Users(email, firstname, lastname, othername, phonenumber, passporturl, password_hash, isadmin) VALUES(%(email)s, %(firstname)s, %(lastname)s, %(othername)s, %(phonenumber)s, %(passporturl)s, %(password_hash)s, %(isadmin)s);", {
                 'email': data['email'], 'firstname': data['firstname'], 'lastname': data['lastname'], 'othername': data['othername'], 'phonenumber': data['phonenumber'], 'passporturl': data['passporturl'], 'password_hash': password_hash, 'isadmin': isAdmin
             })
@@ -214,7 +214,7 @@ class ResetPassword(Resource):
     )
 
     @classmethod
-    def put(self):
+    def post(self):
         data = ResetPassword.parser.parse_args()
         email = data['email']
         password = data['password']
