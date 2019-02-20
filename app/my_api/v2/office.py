@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 import validators
 import psycopg2
+from flask_jwt_extended import (jwt_required, get_jwt_identity)
 
 # local imports
 from ..database import database
@@ -25,7 +26,7 @@ class CreateOfficeV2(Resource):
         help="Type of the office should be filled"
     )
 
-    @classmethod
+    @jwt_required
     def post(self):
         data = CreateOfficeV2.parser.parse_args()
         name = ['name']
@@ -42,11 +43,28 @@ class CreateOfficeV2(Resource):
                 break
 
         try:
-            cur.execute("INSERT INTO Offices(name, type) VALUES(%(name)s, %(type)s);", {
-                'name': data['name'], 'type': data['type']
+            # check if user is admin
+            current_user = get_jwt_identity()
+            cur.execute("SELECT isadmin FROM Users WHERE email = %(email)s;", {
+                'email': current_user
             })
-            connection.commit()
-            return {'Message': 'Offie added'}
+            user_exists = cur.fetchone()
+            is_admin = user_exists[0]
+            if is_admin:
+                # check if office is registered
+                cur.execute("SELECT * FROM Offices WHERE name = %(name)s;", {
+                    'name': data['name']
+                })
+                office_exist = cur.fetchone()
+                if office_exist is None:
+                    cur.execute("INSERT INTO Offices(name, type) VALUES(%(name)s, %(type)s);", {
+                        'name': data['name'], 'type': data['type']
+                    })
+                    connection.commit()
+                    return {'Message': 'Office successfully added'}, 200
+                return {'Message': 'The office already exists'}, 400
+            else:
+                return {'Message': 'This panel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -55,6 +73,7 @@ class CreateOfficeV2(Resource):
 
 class GetOfficesV2(Resource):
     """docstring for GetOfficesV2."""
+    @jwt_required
     def get(self):
         try:
             cur.execute("SELECT * FROM Offices;")
@@ -68,7 +87,7 @@ class GetOfficesV2(Resource):
 
 class GetOfficeByIdV2(Resource):
     """docstring for EditPartyV2."""
-    @classmethod
+    @jwt_required
     def get(self, office_id):
         try:
             cur.execute("SELECT * FROM Offices WHERE office_id = %s", [office_id])
