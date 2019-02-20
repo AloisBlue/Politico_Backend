@@ -83,6 +83,7 @@ class CreatePartyV2(Resource):
 
 class GetPartiesV2(Resource):
     """docstring for GetPartiesV2."""
+    @jwt_required
     def get(self):
         try:
             cur.execute("SELECT * FROM Parties;")
