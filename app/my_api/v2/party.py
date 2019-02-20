@@ -72,7 +72,7 @@ class CreatePartyV2(Resource):
                     connection.commit()
                     return {'Message': 'Party successfully added'}, 200
                 else:
-                    return {'Message': 'Party already exists'}, 400
+                    return {'Message': 'Party already exists'}, 409
             else:
                 return {'Message': 'This panel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
@@ -88,7 +88,7 @@ class GetPartiesV2(Resource):
         try:
             cur.execute("SELECT * FROM Parties;")
             parties = cur.fetchall()
-            return {'Message': parties}
+            return {'Message': parties}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -116,7 +116,7 @@ class EditPartyV2(Resource):
         try:
             cur.execute("SELECT * FROM Parties WHERE party_id = %s", [party_id])
             party = cur.fetchall()
-            return {'Message': party}
+            return {'Message': party}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)

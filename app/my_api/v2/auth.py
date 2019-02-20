@@ -214,7 +214,7 @@ class ResetPassword(Resource):
     )
 
     @classmethod
-    def put(self):
+    def post(self):
         data = ResetPassword.parser.parse_args()
         email = data['email']
         password = data['password']
