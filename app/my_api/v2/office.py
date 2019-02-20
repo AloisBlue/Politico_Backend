@@ -61,10 +61,17 @@ class CreateOfficeV2(Resource):
                         'name': data['name'], 'type': data['type']
                     })
                     connection.commit()
-                    return {'Message': 'Office successfully added'}, 200
-                return {'Message': 'The office already exists'}, 409
+                    return {
+                        'status': 201,
+                        'Message': 'Office successfully added',
+                        'data': data}, 201
+                return {
+                    'status': 409,
+                    'Message': 'The office already exists'}, 409
             else:
-                return {'Message': 'This panel is for administrators only'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'This panel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -78,7 +85,10 @@ class GetOfficesV2(Resource):
         try:
             cur.execute("SELECT * FROM Offices;")
             offices = cur.fetchall()
-            return {'Message': offices}, 200
+            return {
+                'status': 200,
+                'Message': 'This includes offices available',
+                'data': offices}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -92,7 +102,10 @@ class GetOfficeByIdV2(Resource):
         try:
             cur.execute("SELECT * FROM Offices WHERE office_id = %s", [office_id])
             office = cur.fetchall()
-            return {'Message': office}, 200
+            return {
+                'status': 200,
+                'Message': 'This are the party details',
+                'data': office}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)

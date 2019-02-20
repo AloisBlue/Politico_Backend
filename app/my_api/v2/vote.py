@@ -72,9 +72,13 @@ class RegisterCandidate(Resource):
                     'firstname': firstname, 'lastname': lastname, 'office': data['office'], 'party': data['party'], 'user_id': user_id
                 })
                 connection.commit()
-                return {'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office), 'Details': data}, 201
+                return {
+                    'status': 201,
+                    'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office), 'data': data}, 201
             else:
-                return {"Message": "You have already registered as a candidate for {}.".format(office)}
+                return {
+                    'status': 409,
+                    "Message": "You have already registered as a candidate for {}.".format(office)}, 409
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -147,9 +151,14 @@ class CastVote(Resource):
                     'user_id': user_id, 'cast_date': cast_date, 'president': president, 'governor': governor, 'mca': mca
                     })
                 connection.commit()
-                return {'Message': 'Vote casted!!!'}, 200
+                return {
+                    'status': 201,
+                    'Message': 'Vote casted!!!',
+                    'data': data}, 200
             else:
-                return {'Message': 'You have already voted'}, 403
+                return {
+                    'status': 409,
+                    'Message': 'You have already voted'}, 409
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -181,13 +190,21 @@ class GetVotes(Resource):
             # 2 for governor
             # 3 for mca
             if office_serial == 1:
-                return {'Message': president}, 200
+                return {
+                    'status': 200,
+                    'Data': president}, 200
             elif office_serial == 2:
-                return {'Message': governor}, 200
+                return {
+                    'status': 200,
+                    'Data': governor}, 200
             elif office_serial == 3:
-                return {'Message': mca}, 200
+                return {
+                    'status': 200,
+                    'Data': mca}, 200
             else:
-                return {'Message': 'Sorry, no office registered under that serial'}, 404
+                return {
+                    'status': 404,
+                    'Message': 'Sorry, no office registered under that serial'}, 404
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -231,6 +248,11 @@ class FilePetition(Resource):
                     'petition_date': petition_date, 'user_id': user_id, 'created_by': created_by, 'office': office, 'body': body
                 })
             connection.commit()
-            return {'Message': 'Your petition is received and recorded'}, 200
+            return {
+                'status': 201,
+                'Message': 'Your petition is received and recorded',
+                'data': data}, 201
         else:
-            return {'Message': 'You have already filed a petition'}, 403
+            return {
+                'status': 409,
+                'Message': 'You have already filed a petition'}, 409

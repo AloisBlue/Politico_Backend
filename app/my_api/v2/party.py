@@ -70,11 +70,18 @@ class CreatePartyV2(Resource):
                         'name': data['name'], 'hqaddress': data['hqaddress'], 'logourl': data['logourl']
                     })
                     connection.commit()
-                    return {'Message': 'Party successfully added'}, 200
+                    return {
+                        'status': 201,
+                        'Message': 'Party successfully added',
+                        'data': data}, 201
                 else:
-                    return {'Message': 'Party already exists'}, 409
+                    return {
+                        'status': 409,
+                        'Message': 'Party already exists'}, 409
             else:
-                return {'Message': 'This panel is for administrators only'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'This panel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -88,7 +95,10 @@ class GetPartiesV2(Resource):
         try:
             cur.execute("SELECT * FROM Parties;")
             parties = cur.fetchall()
-            return {'Message': parties}, 200
+            return {
+                'status': 200,
+                'Message': 'This includes all the parties',
+                'data': parties}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -116,7 +126,10 @@ class EditPartyV2(Resource):
         try:
             cur.execute("SELECT * FROM Parties WHERE party_id = %s", [party_id])
             party = cur.fetchall()
-            return {'Message': party}, 200
+            return {
+                'status': 200,
+                'Message': 'This are the details of your requested party',
+                'data': party}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -145,9 +158,14 @@ class EditPartyV2(Resource):
             if is_admin:
                 cur.execute("UPDATE Parties SET name = %s, hqaddress = %s WHERE party_id = %s", (name, hqaddress, party_id))
                 connection.commit()
-                return {'Message': 'The party was updated'}, 200
+                return {
+                    'status': 200,
+                    'Message': 'The party was updated',
+                    'data': data}, 200
             else:
-                return {'Message': 'This pannel is for administrators only'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'This pannel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -164,9 +182,13 @@ class EditPartyV2(Resource):
             is_admin = user_exists[0]
             if is_admin:
                 cur.execute("DELETE FROM Parties WHERE party_id = %s;", [party_id])
-                return {'Message': 'Party deleted'}, 200
+                return {
+                    'status': 200,
+                    'Message': 'Party deleted'}, 200
             else:
-                return {'Message': 'This pannel is for administrators only'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'This pannel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)

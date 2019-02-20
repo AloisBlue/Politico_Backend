@@ -131,8 +131,12 @@ class RegisterUser(Resource):
             connection.commit()
             access_token = create_access_token(identity=email)
             refresh_token = create_refresh_token(identity=email)
-            return {'Message': 'Account for {} was succesfully created!!!'.format(firstname),
-                    'Access Token': access_token}, 201
+            success = {
+                'Access Token': access_token,
+                'user': firstname}
+            return {'status': 201,
+                    'Message': 'Account for {} was succesfully created!!!'.format(firstname),
+                    'data': success}, 201
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -171,17 +175,23 @@ class LoginUser(Resource):
                 break
         # login
         try:
-            cur.execute("SELECT password_hash FROM Users WHERE email = %(email)s", {
+            cur.execute("SELECT password_hash, firstname FROM Users WHERE email = %(email)s", {
                 'email': data['email']
             })
             # check if email exists
             result = cur.fetchone()
             user_exists = result[0]
+            firstname = result[1]
             if Bcrypt().check_password_hash(user_exists, password):
                 access_token = create_access_token(identity=email)
                 refresh_token = create_refresh_token(identity=email)
-                return {'Message': 'Logged in as {}'.format(email),
-                        'Access Token': access_token}, 200
+                success = {
+                    'Access Token': access_token,
+                    'user': firstname
+                }
+                return {'status': 200,
+                        'Message': 'Logged in as {}'.format(email),
+                        'data': success}, 200
             else:
                 return {'Message': 'Invalid credentials'}, 403
 
