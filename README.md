@@ -49,7 +49,7 @@ https://www.pivotaltracker.com/n/projects/2244219
 |PUT   |/api/v2/parties/1   |Enables updating of a political party   |
 |DELETE   |/api/v2/parties/1   |Delete an existing party   |
 |GET   |/api/v2/vote   |Gets all votes   |
-|GET   |/api/v2/vote/1   |Gives results of a specific candidate   |
+|GET   |/api/v2/vote/1   |Gives results of a specific office   |
 |POST   |/api/v2/petition   |Files a petition   |
 |POST   |/api/v2/auth/resetpassword   |Resets a password   |
 #### Deployment
