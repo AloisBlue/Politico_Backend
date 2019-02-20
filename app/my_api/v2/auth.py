@@ -162,7 +162,7 @@ class LoginUser(Resource):
         # validations
         while True:
             if not email:
-                return {'Message': 'Email field is empty.'}, 400
+                return {'Message': 'You must provide an email'}, 400
             elif not password:
                 return {'Message': 'You must provide a password'}, 400
             elif not validators.email(email):
@@ -181,7 +181,7 @@ class LoginUser(Resource):
                 access_token = create_access_token(identity=email)
                 refresh_token = create_refresh_token(identity=email)
                 return {'Message': 'Logged in as {}'.format(email),
-                        'Access Token': access_token}, 201
+                        'Access Token': access_token}, 200
             else:
                 return {'Message': 'Invalid credentials'}, 403
 
@@ -189,3 +189,48 @@ class LoginUser(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class ResetPassword(Resource):
+    """docstring for ResetPassword."""
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'email',
+        type=str,
+        required=True,
+        help="Email field empty"
+    )
+    parser.add_argument(
+        'password',
+        type=str,
+        required=True,
+        help="Password field empty"
+    )
+    parser.add_argument(
+        'passwordconfirm',
+        type=str,
+        required=True,
+        help="Confirm password field empty"
+    )
+
+    @classmethod
+    def put(self):
+        data = ResetPassword.parser.parse_args()
+        email = data['email']
+        password = data['password']
+        passwordconfirm = data['passwordconfirm']
+        while True:
+            if not email:
+                return {'Message': 'Email cannot be empty'}, 400
+            elif not password:
+                return {'Message': 'Password cannot be empty'}, 400
+            elif not passwordconfirm:
+                return {'Message': 'Confirm password cannot be empty'}, 400
+            else:
+                break
+        password_hash = Bcrypt().generate_password_hash(password).decode()
+        cur.execute("UPDATE Users SET password_hash = %(password_hash)s WHERE email = %(email)s", {
+            'password_hash': password_hash, 'email': email
+        })
+        connection.commit()
+        return {'Message': 'Password reset was successful'}, 200
