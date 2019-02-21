@@ -107,20 +107,12 @@ class RegisterUser(Resource):
                 return {'Message': 'Password is empty'}, 400
             elif not passwordconfirm:
                 return {'Message': 'Password confirm is empty'}, 400
-            elif re.search('[a-z]', password) is None:
-                return {'Message': 'Password should have atleast one lowercase'}, 400
-            elif re.search('[0-9]', password) is None:
-                return {'Message': 'Password should contain atleast one digit'}, 400
-            elif re.search('[A-Z]', password) is None:
-                return {'Message': 'Password should have atleast one uppercase'}, 400
-            elif re.search("[$#@&]", password) is None:
-                return {'Message': 'Password should contain one of the symbols $#@&'}, 400
-            elif len(password) < 8:
-                return {'Message': 'Password should have minimum of 8 characters'}, 400
+            if not re.match(r"(^[a-zA-Z0-9_.-]+@[a-zA-Z-]+\.[a-zA-Z-]+$)", email):
+                return {'Message': 'Email format not correct'}, 400
+            elif re.search(r'^(?=.{8,}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%&^+=]).*', password) is None:
+                return {'Message': 'A good password should contain uppercase, lowercase, special characters @#$%&^+= , digits and above 8 characters'}, 400
             elif password != passwordconfirm:
                 return {'Message': 'Passwords must match'}, 400
-            elif not validators.email(email):
-                return {'Message': 'Email format not correct'}, 400
             elif not validators.url(passporturl):
                 return {'Message': 'The passport URL is invalid'}, 400
             else:
@@ -184,6 +176,14 @@ class LoginUser(Resource):
                 break
         # login
         try:
+            cur.execute("SELECT * FROM Users WHERE email=%(email)s", {
+                'email': data['email']
+            })
+            empty_acc = cur.fetchone()
+            if empty_acc is None:
+                return {
+                    'status': 404,
+                    'Message': 'Invalid details'}, 404
             cur.execute("SELECT password_hash, firstname FROM Users WHERE email = %(email)s", {
                 'email': data['email']
             })
@@ -202,7 +202,9 @@ class LoginUser(Resource):
                         'Message': 'Logged in as {}'.format(email),
                         'data': success}, 200
             else:
-                return {'Message': 'Invalid credentials'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'Invalid credentials'}, 403
 
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")

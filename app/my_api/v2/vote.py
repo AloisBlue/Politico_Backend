@@ -191,35 +191,42 @@ class GetVotes(Resource):
         try:
             # get presidents
             cur.execute("SELECT president FROM Votes;")
+            p_results = cur.fetchall()
             president = {
-                "President's Office Results": cur.fetchall()
+                "President's Office Results": p_results
             }
             # get governor
             cur.execute("SELECT governor FROM Votes;")
+            g_results = cur.fetchall()
             governor = {
-                "Governor's Office Results": cur.fetchall()
+                "Governor's Office Results": g_results
             }
             # get mca
             cur.execute("SELECT mca FROM Votes;")
+            m_results = cur.fetchall()
             mca = {
-                "Mca's Office Results": cur.fetchall()
+                "Mca's Office Results": m_results
             }
             # office serials
             # 1 for president
             # 2 for governor
             # 3 for mca
+            print(type(p_results))
             if office_serial == 1:
                 return {
                     'status': 200,
-                    'Data': president}, 200
+                    'Data': president,
+                    'votes': len(p_results)}, 200
             elif office_serial == 2:
                 return {
                     'status': 200,
-                    'Data': governor}, 200
+                    'Data': governor,
+                    'votes': len(g_results)}, 200
             elif office_serial == 3:
                 return {
                     'status': 200,
-                    'Data': mca}, 200
+                    'Data': mca,
+                    'votes': len(m_results)}, 200
             else:
                 return {
                     'status': 404,
@@ -270,6 +277,7 @@ class FilePetition(Resource):
             return {
                 'status': 201,
                 'Message': 'Your petition is received and recorded',
+                'createBy': user_id,
                 'data': data}, 201
         else:
             return {

@@ -181,10 +181,17 @@ class EditPartyV2(Resource):
             user_exists = cur.fetchone()
             is_admin = user_exists[0]
             if is_admin:
-                cur.execute("DELETE FROM Parties WHERE party_id = %s;", [party_id])
-                return {
-                    'status': 200,
-                    'Message': 'Party deleted'}, 200
+                cur.execute("SELECT * FROM Parties WHERE party_id = %s;", [party_id])
+                exists_party = cur.fetchone()
+                if not exists_party:
+                    return {
+                        'status': 404,
+                        'Message': 'We cannot find office by that id'}, 404
+                else:
+                    cur.execute("DELETE FROM Parties WHERE party_id = %s;", [party_id])
+                    return {
+                        'status': 200,
+                        'Message': 'Party deleted'}, 200
             else:
                 return {
                     'status': 403,
