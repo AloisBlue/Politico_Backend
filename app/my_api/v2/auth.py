@@ -4,6 +4,7 @@ from flask_restful import Resource, reqparse
 from flask_bcrypt import Bcrypt
 import psycopg2
 import validators
+import re
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
@@ -106,12 +107,12 @@ class RegisterUser(Resource):
                 return {'Message': 'Password is empty'}, 400
             elif not passwordconfirm:
                 return {'Message': 'Password confirm is empty'}, 400
-            elif len(password) < 8:
-                return {'Message': 'Password should have minimum of 8 characters'}, 400
+            if not re.match(r"(^[a-zA-Z0-9_.-]+@[a-zA-Z-]+\.[a-zA-Z-]+$)", email):
+                return {'Message': 'Email format not correct'}, 400
+            elif re.search(r'^(?=.{8,}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%&^+=]).*', password) is None:
+                return {'Message': 'A good password should contain uppercase, lowercase, special characters @#$%&^+= , digits and above 8 characters'}, 400
             elif password != passwordconfirm:
                 return {'Message': 'Passwords must match'}, 400
-            elif not validators.email(email):
-                return {'Message': 'Email format not correct'}, 400
             elif not validators.url(passporturl):
                 return {'Message': 'The passport URL is invalid'}, 400
             else:
@@ -131,8 +132,19 @@ class RegisterUser(Resource):
             connection.commit()
             access_token = create_access_token(identity=email)
             refresh_token = create_refresh_token(identity=email)
-            return {'Message': 'Account for {} was succesfully created!!!'.format(firstname),
-                    'Access Token': access_token}, 201
+            user_object = {
+                'Firstname': firstname,
+                'Lastname': lastname,
+                'Othername': othername,
+                'PhoneNumber': phonenumber,
+                'PassportUrl': passporturl
+            }
+            success = {
+                'Access Token': access_token,
+                'user': user_object}
+            return {'status': 201,
+                    'Message': 'Account for {} was succesfully created!!!'.format(firstname),
+                    'data': success}, 201
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -171,19 +183,42 @@ class LoginUser(Resource):
                 break
         # login
         try:
-            cur.execute("SELECT password_hash FROM Users WHERE email = %(email)s", {
+            cur.execute("SELECT * FROM Users WHERE email=%(email)s", {
+                'email': data['email']
+            })
+            empty_acc = cur.fetchone()
+            if empty_acc is None:
+                return {
+                    'status': 404,
+                    'Message': 'Invalid details'}, 404
+            cur.execute("SELECT password_hash, firstname, lastname, othername, phonenumber, passporturl FROM Users WHERE email = %(email)s", {
                 'email': data['email']
             })
             # check if email exists
             result = cur.fetchone()
             user_exists = result[0]
+            firstname = result[1]
             if Bcrypt().check_password_hash(user_exists, password):
                 access_token = create_access_token(identity=email)
                 refresh_token = create_refresh_token(identity=email)
-                return {'Message': 'Logged in as {}'.format(email),
-                        'Access Token': access_token}, 200
+                user_object = {
+                    'Firstname': firstname,
+                    'Lastname': result[2],
+                    'Othername': result[3],
+                    'PhoneNumber': result[4],
+                    'PassportUrl': result[5]
+                }
+                success = {
+                    'Access Token': access_token,
+                    'user': user_object
+                }
+                return {'status': 200,
+                        'Message': 'Logged in as {}'.format(email),
+                        'data': success}, 200
             else:
-                return {'Message': 'Invalid credentials'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'Invalid credentials'}, 403
 
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")

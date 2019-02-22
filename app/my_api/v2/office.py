@@ -29,8 +29,8 @@ class CreateOfficeV2(Resource):
     @jwt_required
     def post(self):
         data = CreateOfficeV2.parser.parse_args()
-        name = ['name']
-        type = ['type']
+        name = data['name']
+        type = data['type']
         # validation
         while True:
             if not name or not type:
@@ -57,14 +57,27 @@ class CreateOfficeV2(Resource):
                 })
                 office_exist = cur.fetchone()
                 if office_exist is None:
-                    cur.execute("INSERT INTO Offices(name, type) VALUES(%(name)s, %(type)s);", {
+                    cur.execute("INSERT INTO Offices(name, type) VALUES(%(name)s, %(type)s) RETURNING office_id;", {
                         'name': data['name'], 'type': data['type']
                     })
                     connection.commit()
-                    return {'Message': 'Office successfully added'}, 200
-                return {'Message': 'The office already exists'}, 409
+                    new_id = cur.fetchone()
+                    item = {
+                        'id': new_id,
+                        'name': name,
+                        'type': type
+                    }
+                    return {
+                        'status': 201,
+                        'Message': 'Office successfully added',
+                        'data': item}, 201
+                return {
+                    'status': 409,
+                    'Message': 'The office already exists'}, 409
             else:
-                return {'Message': 'This panel is for administrators only'}, 403
+                return {
+                    'status': 403,
+                    'Message': 'This panel is for administrators only'}, 403
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -78,7 +91,10 @@ class GetOfficesV2(Resource):
         try:
             cur.execute("SELECT * FROM Offices;")
             offices = cur.fetchall()
-            return {'Message': offices}, 200
+            return {
+                'status': 200,
+                'Message': 'This includes offices available',
+                'data': offices}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)
@@ -92,7 +108,10 @@ class GetOfficeByIdV2(Resource):
         try:
             cur.execute("SELECT * FROM Offices WHERE office_id = %s", [office_id])
             office = cur.fetchall()
-            return {'Message': office}, 200
+            return {
+                'status': 200,
+                'Message': 'This are the party details',
+                'data': office}, 200
         except (Exception, psycopg2.DatabaseError) as error:
             cur.execute("rollback;")
             print(error)

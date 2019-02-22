@@ -21,3 +21,5 @@ name varchar (50) NOT NULL,
 type varchar (50) NOT NULL
 );"""
 queries = [userstable, partiestable, officetable]
+
+admin = """INSERT INTO Users(email, firstname, lastname, othername, phonenumber, passporturl, password_hash, isadmin) VALUES('admin@admin.com', 'Alois', 'Mburu', 'Admin', '0791999232', 'https://miro.medium.com/fit/c/240/240/1*hiAQNjsT30LuqlZRmpdJkQ.jpeg', '$2b$12$ql6PgHM9PXnhW2Lh2RyeY.t.OZelCSttKw0Dhdy1SLLvn3RxS.JHq', TRUE);"""
