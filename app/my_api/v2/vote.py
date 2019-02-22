@@ -4,6 +4,7 @@ from flask_restful import Resource, reqparse
 import psycopg2
 import datetime
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
+from flask import make_response, jsonify
 
 # local imports
 from ..database import database
@@ -86,9 +87,14 @@ class RegisterCandidate(Resource):
                         'firstname': firstname, 'lastname': lastname, 'office': data['office'], 'party': data['party'], 'user_id': user_id
                     })
                     connection.commit()
+                    # get ids
+                    result_obj = {
+                        'office': 's'
+                    }
                     return {
                         'status': 201,
-                        'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office), 'data': data}, 201
+                        'Message': 'Candidate {} registered to vie for office of the {}.'.format(firstname, office),
+                        'data': result_obj}, 201
                 else:
                     return {
                         'status': 409,
@@ -166,14 +172,17 @@ class CastVote(Resource):
             user_voted = cur.fetchone()
             cast_date = datetime.datetime.utcnow()
             if user_voted is None:
-                cur.execute("INSERT INTO Votes(user_id, cast_date, president, governor, mca) VALUES(%(user_id)s, %(cast_date)s, %(president)s, %(governor)s, %(mca)s);", {
+                cur.execute("INSERT INTO Votes(user_id, cast_date, president, governor, mca) VALUES(%(user_id)s, %(cast_date)s, %(president)s, %(governor)s, %(mca)s) RETURNING user_id, cast_date;", {
                     'user_id': user_id, 'cast_date': cast_date, 'president': president, 'governor': governor, 'mca': mca
                     })
                 connection.commit()
-                return {
+                new_details = cur.fetchone()
+                return make_response(jsonify({
                     'status': 201,
                     'Message': 'Vote casted!!!',
-                    'data': data}, 200
+                    'createdOn': new_details[1],
+                    'createdBy': new_details[0],
+                    'data': data}), 200)
             else:
                 return {
                     'status': 409,

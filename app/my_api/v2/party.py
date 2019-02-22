@@ -35,9 +35,9 @@ class CreatePartyV2(Resource):
     @jwt_required
     def post(self):
         data = CreatePartyV2.parser.parse_args()
-        name = ['name']
-        hqaddress = ['hqaddress']
-        logourl = ['logourl']
+        name = data['name']
+        hqaddress = data['hqaddress']
+        logourl = data['logourl']
         # validation
         while True:
             if not name or not hqaddress or not logourl:
@@ -66,14 +66,19 @@ class CreatePartyV2(Resource):
                 })
                 party_exist = cur.fetchone()
                 if party_exist is None:
-                    cur.execute("INSERT INTO Parties(name, hqaddress, logourl) VALUES(%(name)s, %(hqaddress)s, %(logourl)s);", {
+                    cur.execute("INSERT INTO Parties(name, hqaddress, logourl) VALUES(%(name)s, %(hqaddress)s, %(logourl)s) RETURNING party_id;", {
                         'name': data['name'], 'hqaddress': data['hqaddress'], 'logourl': data['logourl']
                     })
                     connection.commit()
+                    new_id = cur.fetchone()
+                    item = {
+                        'id': new_id,
+                        'name': name
+                    }
                     return {
                         'status': 201,
                         'Message': 'Party successfully added',
-                        'data': data}, 201
+                        'data': item}, 201
                 else:
                     return {
                         'status': 409,

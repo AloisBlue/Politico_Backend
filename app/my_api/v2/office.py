@@ -29,8 +29,8 @@ class CreateOfficeV2(Resource):
     @jwt_required
     def post(self):
         data = CreateOfficeV2.parser.parse_args()
-        name = ['name']
-        type = ['type']
+        name = data['name']
+        type = data['type']
         # validation
         while True:
             if not name or not type:
@@ -57,14 +57,20 @@ class CreateOfficeV2(Resource):
                 })
                 office_exist = cur.fetchone()
                 if office_exist is None:
-                    cur.execute("INSERT INTO Offices(name, type) VALUES(%(name)s, %(type)s);", {
+                    cur.execute("INSERT INTO Offices(name, type) VALUES(%(name)s, %(type)s) RETURNING office_id;", {
                         'name': data['name'], 'type': data['type']
                     })
                     connection.commit()
+                    new_id = cur.fetchone()
+                    item = {
+                        'id': new_id,
+                        'name': name,
+                        'type': type
+                    }
                     return {
                         'status': 201,
                         'Message': 'Office successfully added',
-                        'data': data}, 201
+                        'data': item}, 201
                 return {
                     'status': 409,
                     'Message': 'The office already exists'}, 409

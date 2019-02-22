@@ -132,9 +132,16 @@ class RegisterUser(Resource):
             connection.commit()
             access_token = create_access_token(identity=email)
             refresh_token = create_refresh_token(identity=email)
+            user_object = {
+                'Firstname': firstname,
+                'Lastname': lastname,
+                'Othername': othername,
+                'PhoneNumber': phonenumber,
+                'PassportUrl': passporturl
+            }
             success = {
                 'Access Token': access_token,
-                'user': firstname}
+                'user': user_object}
             return {'status': 201,
                     'Message': 'Account for {} was succesfully created!!!'.format(firstname),
                     'data': success}, 201
@@ -184,7 +191,7 @@ class LoginUser(Resource):
                 return {
                     'status': 404,
                     'Message': 'Invalid details'}, 404
-            cur.execute("SELECT password_hash, firstname FROM Users WHERE email = %(email)s", {
+            cur.execute("SELECT password_hash, firstname, lastname, othername, phonenumber, passporturl FROM Users WHERE email = %(email)s", {
                 'email': data['email']
             })
             # check if email exists
@@ -194,9 +201,16 @@ class LoginUser(Resource):
             if Bcrypt().check_password_hash(user_exists, password):
                 access_token = create_access_token(identity=email)
                 refresh_token = create_refresh_token(identity=email)
+                user_object = {
+                    'Firstname': firstname,
+                    'Lastname': result[2],
+                    'Othername': result[3],
+                    'PhoneNumber': result[4],
+                    'PassportUrl': result[5]
+                }
                 success = {
                     'Access Token': access_token,
-                    'user': firstname
+                    'user': user_object
                 }
                 return {'status': 200,
                         'Message': 'Logged in as {}'.format(email),
