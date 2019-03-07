@@ -1,16 +1,20 @@
 # app/my_api/v2/auth.py
 # imports
 from flask_restful import Resource, reqparse
+from flask import url_for, render_template
 from flask_bcrypt import Bcrypt
 import psycopg2
 import validators
 import re
+import datetime
+import pdb
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
 
 # local imports
 from ..database import database
+from ..mailer import send_email
 
 connection = database()
 cur = connection.cursor()
@@ -88,6 +92,7 @@ class RegisterUser(Resource):
         passporturl = data['passporturl']
         password = data['password']
         passwordconfirm = data['passwordconfirm']
+        confirmed = False
         isAdmin = False
         # validations
         while True:
@@ -126,11 +131,17 @@ class RegisterUser(Resource):
             user_exists = cur.fetchone()
             if user_exists is not None:
                 return {'Message': 'User with such email already exists.'}, 409
-            cur.execute("INSERT INTO Users(email, firstname, lastname, othername, phonenumber, passporturl, password_hash, isadmin) VALUES(%(email)s, %(firstname)s, %(lastname)s, %(othername)s, %(phonenumber)s, %(passporturl)s, %(password_hash)s, %(isadmin)s);", {
-                'email': data['email'], 'firstname': data['firstname'], 'lastname': data['lastname'], 'othername': data['othername'], 'phonenumber': data['phonenumber'], 'passporturl': data['passporturl'], 'password_hash': password_hash, 'isadmin': isAdmin
+            cur.execute("INSERT INTO Users(email, firstname, lastname, othername, phonenumber, passporturl, password_hash, confirmed, isadmin) VALUES(%(email)s, %(firstname)s, %(lastname)s, %(othername)s, %(phonenumber)s, %(passporturl)s, %(password_hash)s, %(confirmed)s, %(isadmin)s);", {
+                'email': data['email'], 'firstname': data['firstname'], 'lastname': data['lastname'], 'othername': data['othername'], 'phonenumber': data['phonenumber'], 'passporturl': data['passporturl'], 'password_hash': password_hash, 'confirmed': confirmed, 'isadmin': isAdmin
             })
             connection.commit()
             access_token = create_access_token(identity=email)
+            # send confirmation link
+            confirm_url = url_for('api_v2.confirmuser', token=access_token)
+            html = render_template('mailer.html', confirm_url=confirm_url)
+            subject = "Confirm your email please"
+            send_email(email, subject, html)
+            # continue
             refresh_token = create_refresh_token(identity=email)
             user_object = {
                 'Firstname': firstname,
@@ -224,6 +235,28 @@ class LoginUser(Resource):
             cur.execute("rollback;")
             print(error)
             return {'Message': 'current transaction is aborted'}, 500
+
+
+class ConfirmUser(Resource):
+    """docstring for ConfirmUser."""
+    @jwt_required
+    def get(self, token):
+        current_user = get_jwt_identity()
+        cur.execute("SELECT confirmed FROM Users WHERE email = %(email)s;", {
+            'email': current_user
+        })
+        user_exists = cur.fetchone()
+        is_confirmed = user_exists[0]
+        confirmed = 'True'
+        confirmed_on = datetime.datetime.now()
+        if is_confirmed:
+            return {'Message': 'Account already confirmed, login to your account'}, 409
+        else:
+            cur.execute("UPDATE Users SET confirmed = %(confirmed)s, confirmed_on = %(confirmed_on)s WHERE email = %(email)s", {
+                'confirmed': confirmed, 'confirmed_on': confirmed_on, 'email': current_user
+            })
+            connection.commit()
+            return {'Message': 'Your account has been confirmed'}, 200
 
 
 class ResetPassword(Resource):

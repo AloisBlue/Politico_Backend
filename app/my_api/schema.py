@@ -7,6 +7,8 @@ email varchar(40) NOT NULL UNIQUE,
 phoneNumber varchar (20) NOT NULL,
 passportUrl varchar (255) NOT NULL,
 password_hash varchar(64) NOT NULL,
+confirmed boolean DEFAULT 'f',
+confirmed_on TIMESTAMP NULL,
 isAdmin boolean DEFAULT 'f'
 );"""
 partiestable = """CREATE TABLE if not exists Parties(
@@ -22,4 +24,5 @@ type varchar (50) NOT NULL
 );"""
 queries = [userstable, partiestable, officetable]
 
-admin = """INSERT INTO Users(email, firstname, lastname, othername, phonenumber, passporturl, password_hash, isadmin) VALUES('admin@admin.com', 'Alois', 'Mburu', 'Admin', '0791999232', 'https://miro.medium.com/fit/c/240/240/1*hiAQNjsT30LuqlZRmpdJkQ.jpeg', '$2b$12$ql6PgHM9PXnhW2Lh2RyeY.t.OZelCSttKw0Dhdy1SLLvn3RxS.JHq', TRUE);"""
+# administrator
+admin = """INSERT INTO Users(email, firstname, lastname, othername, phonenumber, passporturl, password_hash, confirmed, isadmin) VALUES('anonymousnewblue@gmail.com', 'Alois', 'Mburu', 'Admin', '0791999232', 'https://miro.medium.com/fit/c/240/240/1*hiAQNjsT30LuqlZRmpdJkQ.jpeg', '$2b$12$ql6PgHM9PXnhW2Lh2RyeY.t.OZelCSttKw0Dhdy1SLLvn3RxS.JHq', TRUE, TRUE);"""
